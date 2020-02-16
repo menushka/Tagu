@@ -1,0 +1,21 @@
+{
+  "name": "tagu",
+  "version": "1.0.0",
+  "description": "An app to manage / view your files using tags",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "watch": "tsc -p . -w",
+    "start": "node dist/main.js",
+    "test": "jest"
+  },
+  "author": "Menushka Weeratunga <contact@menushka.ca>",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^25.1.0",
+    "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "realm": "^3.6.4"
+  }
+}
