@@ -16,6 +16,6 @@
     "typescript": "^3.7.5"
   },
   "dependencies": {
-    "realm": "^3.6.4"
+    "realm": "^4.0.0-beta.0"
   }
 }

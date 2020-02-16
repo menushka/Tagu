@@ -1,3 +1,6 @@
-import { Database } from './database';
+import { Image } from './database';
 
-const db = new Database();
+const image = new Image("./dfdsfds");
+const image2 = new Image("./sdfsdfsafdfsfds");
+image.write();
+image2.write();

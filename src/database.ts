@@ -1,14 +1,16 @@
 import Realm = require('realm');
 
-export class Database {
+abstract class RealmItem {
+    abstract schema: Realm.ObjectSchema;
+    abstract name: string;
 
-    constructor() {
+    write() {
         Realm.open({
             path: 'data/data.realm',
-            schema: [Image.schema]
+            schema: [this.schema]
         }).then(realm => {
             realm.write(() => {
-                realm.create('Image', new Image('./filename.png'));
+                realm.create(this.name, this, true);
             });
             realm.close();
         }).catch(error => {
@@ -17,9 +19,10 @@ export class Database {
     }
 }
 
-export class Image {
-    static schema: Realm.ObjectSchema = {
+export class Image extends RealmItem {
+    schema: Realm.ObjectSchema = {
         name: 'Image',
+        primaryKey: 'path',
         properties: {
             path: 'string',
             fileType: 'string',
@@ -27,6 +30,7 @@ export class Image {
             tags: 'string[]',
         }
     }
+    name: string = "Image";
 
     path: string;
     fileType: string;
@@ -34,6 +38,7 @@ export class Image {
     tags: string[];
 
     constructor(path: string) {
+        super()
         this.path = path;
         this.fileType = "png";
         this.createdOn = new Date();
