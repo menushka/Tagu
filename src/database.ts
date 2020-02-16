@@ -64,7 +64,7 @@ export class Image {
 
     constructor(path: string, tags: string[] = []) {
         this.path = path;
-        this.fileType = path.split('.').pop();
+        this.fileType = '';
         this.tags = tags.map(x => new Tag(x));
     }
 }
