@@ -14,8 +14,8 @@ import * as ReactDOM from 'react-dom';
 import {AppContainer} from 'react-hot-loader';
 
 let render = () => {
-  const { App } = require('./app');
-  ReactDOM.render(<AppContainer><App /></AppContainer>, document.getElementById('App'));
+  const { Main } = require('./components/main');
+  ReactDOM.render(<AppContainer><Main /></AppContainer>, document.getElementById('App'));
 }
 
 render();
