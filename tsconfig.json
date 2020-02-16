@@ -6,7 +6,9 @@
         "removeComments": true,
         "noImplicitAny": true,
         "baseUrl": "src",
-        "outDir": "dist"
+        "outDir": "dist",
+        "jsx": "react",
+        "sourceMap": true
     },
     "include": [
       "src/**/*"

@@ -7,15 +7,25 @@
     "build": "tsc -p .",
     "watch": "tsc -p . -w",
     "start": "node dist/main.js",
-    "test": "jest"
+    "test": "jest",
+    "webpack": "webpack",
+    "webpack-watch": "webpack --watch"
   },
   "author": "Menushka Weeratunga <contact@menushka.ca>",
   "license": "ISC",
   "devDependencies": {
+    "@types/react": "^16.9.19",
+    "@types/react-dom": "^16.9.5",
     "jest": "^25.1.0",
-    "typescript": "^3.7.5"
+    "source-map-loader": "^0.2.4",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.5",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
     "realm": "^4.0.0-beta.0"
   }
 }
