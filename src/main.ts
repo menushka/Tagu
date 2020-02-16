@@ -1,6 +1,7 @@
-import { Image } from './database';
+import { ImageDatabase, Image } from './database';
 
-const image = new Image("./dfdsfds");
-const image2 = new Image("./sdfsdfsafdfsfds");
-image.write();
-image2.write();
+
+const imageDatabase = new ImageDatabase()
+imageDatabase.connect();
+
+imageDatabase.close();
