@@ -1,32 +1,58 @@
 import * as React from 'react';
-import { ImageDatabase, Image } from '../database';
+import { ImageDatabase as ImagesDatabase, Image, TagsDatabase } from '../database';
 
 import { ITreeNode, Tree, InputGroup, FormGroup, ControlGroup } from '@blueprintjs/core';
+import { Media } from './media';
 
 type MainProps = {};
 
-type MainState = { files: ITreeNode[], search: '' };
+type MainState = { files: ITreeNode[], selectedImage: string };
+
+interface ITreeNodeFile extends ITreeNode {
+  file: string;
+}
 
 export class Main extends React.Component<MainProps, MainState> {
 
-  db: ImageDatabase;
+  imagesDB: ImagesDatabase;
+  tagsDB: TagsDatabase;
 
   constructor(props: MainProps) {
     super(props);
-    this.db = new ImageDatabase();
-    this.db.connect();
-    this.state = { files: this.transformToFiles(this.db.getAll()), search: '' };
+    this.imagesDB = new ImagesDatabase();
+    this.imagesDB.connect();
+    this.tagsDB = new TagsDatabase();
+    this.tagsDB.connect();
+
+    this.state = { files: this.transformToFiles(this.imagesDB.getAll()), selectedImage: '' };
 
     this.onSearchChange = this.onSearchChange.bind(this);
   }
 
-  private transformToFiles(images: Image[]): ITreeNode[] {
+  private transformToFiles(images: Image[]): ITreeNodeFile[] {
     return images.map(x => {
       return {
-        id: x.path,
+        id: `file_${x.path}`,
+        file: x.path,
         label: x.path
-      } as ITreeNode;
+      } as ITreeNodeFile;
     });
+  }
+
+  private handleNodeClick = (nodeData: ITreeNode) => {
+    if ((nodeData.id as string).startsWith('file')) {
+      const originallySelected = nodeData.isSelected;
+      this.forEachNode(this.state.files, n => (n.isSelected = false));
+      nodeData.isSelected = originallySelected == null ? true : !originallySelected;
+
+      this.setState(this.state);
+      this.setState({
+        selectedImage: (nodeData as ITreeNodeFile).file as string
+      });
+    } else {
+      nodeData.isExpanded = !nodeData.isExpanded;
+      this.setState(this.state);
+    }
   }
 
   private handleNodeCollapse = (nodeData: ITreeNode) => {
@@ -39,13 +65,38 @@ export class Main extends React.Component<MainProps, MainState> {
       this.setState(this.state);
   }
 
+  private forEachNode(nodes: ITreeNode[], callback: (node: ITreeNode) => void) {
+    for (const node of nodes) {
+        callback(node);
+        this.forEachNode(node.childNodes ?? [], callback);
+    }
+  }
+
   getFilteredImages(search: string): Image[] {
-    return this.db.getAll(`ANY tags.name CONTAINS '${search}'`);
+    return this.imagesDB.getAll(`ANY tags.name CONTAINS '${search}'`);
+  }
+
+  getFilteredFiles(search: string): ITreeNode[] {
+    if (search === '#tags') {
+      const files: ITreeNode[] = [];
+      const tags = this.tagsDB.getAll();
+      for (const tag of tags) {
+        const tagFiles = this.transformToFiles(this.getFilteredImages(tag.name));
+        files.push({
+          id: `folder_${tag.name}`,
+          label: tag.name,
+          childNodes: tagFiles
+        });
+      }
+      return files;
+    } else {
+      return this.transformToFiles(this.getFilteredImages(search));
+    }
   }
 
   onSearchChange(event: React.ChangeEvent<HTMLElement>) {
     this.setState({
-      files: this.transformToFiles(this.getFilteredImages((event.target as HTMLTextAreaElement).value))
+      files: this.getFilteredFiles((event.target as HTMLTextAreaElement).value)
     });
   }
 
@@ -58,12 +109,13 @@ export class Main extends React.Component<MainProps, MainState> {
           </FormGroup>
           <Tree
             contents={this.state.files}
+            onNodeClick={this.handleNodeClick}
             onNodeCollapse={this.handleNodeCollapse}
             onNodeExpand={this.handleNodeExpand}
           />
         </ControlGroup>
-        <ControlGroup vertical={true}>
-
+        <ControlGroup vertical={true}  fill={true}>
+          <Media path={this.state.selectedImage} />
         </ControlGroup>
       </ControlGroup>
     );
