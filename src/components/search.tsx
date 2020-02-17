@@ -11,9 +11,9 @@ export class Search extends React.Component<SearchProps, SearchState> {
         this.state = { value: '' };
     }
 
-    handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-        this.setState({ value: event.target.value });
-        this.props.onChange(event.target.value);
+    handleChange(event: React.FormEvent<EventTarget>) {
+        this.setState({ value: (event.target as HTMLInputElement).value });
+        this.props.onChange((event.target as HTMLInputElement).value);
     }
 
     render() {
