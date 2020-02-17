@@ -1,9 +1,9 @@
-import * as React from "react";
+import * as React from 'react';
 import * as path from 'path';
 
-type MediaProps = { path: string }
+type MediaProps = { path: string };
 
-type MediaState = {}
+type MediaState = {};
 
 export class Media extends React.Component<MediaProps, MediaState> {
   render() {
