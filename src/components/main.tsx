@@ -1,5 +1,8 @@
 import * as React from 'react';
 import { ImageDatabase as ImagesDatabase, Image, TagsDatabase } from '../database';
+import Dropzone from 'react-dropzone';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 import { ITreeNode, Tree, InputGroup, FormGroup, ControlGroup } from '@blueprintjs/core';
 import { Media } from './media';
@@ -100,24 +103,37 @@ export class Main extends React.Component<MainProps, MainState> {
     });
   }
 
+  onFileDrop(acceptedFiles: File[]) {
+    const file = acceptedFiles[0];
+    fs.ensureDirSync(path.join(__dirname, '../../', 'images'));
+    fs.copySync(file.path, path.join(__dirname, '../../', 'images', path.basename(file.path)));
+  }
+
   render() {
     return (
-      <ControlGroup style={{width: '100vw', height: '100vh'}}>
-        <ControlGroup vertical={true} style={{width: '20vw', borderRight: '1px solid #eaeaea'}}>
-          <FormGroup >
-            <InputGroup id='text-input' placeholder='Search...' onChange={this.onSearchChange} />
-          </FormGroup>
-          <Tree
-            contents={this.state.files}
-            onNodeClick={this.handleNodeClick}
-            onNodeCollapse={this.handleNodeCollapse}
-            onNodeExpand={this.handleNodeExpand}
-          />
-        </ControlGroup>
-        <ControlGroup vertical={true}  fill={true}>
-          <Media path={this.state.selectedImage} />
-        </ControlGroup>
-      </ControlGroup>
+      <Dropzone onDrop={this.onFileDrop}>
+        {({getRootProps, getInputProps}) => (
+          <div {...getRootProps()}>
+          <input {...getInputProps()} />
+          <ControlGroup style={{width: '100vw', height: '100vh'}}>
+            <ControlGroup vertical={true} style={{width: '20vw', borderRight: '1px solid #eaeaea'}}>
+              <FormGroup >
+                <InputGroup id='text-input' placeholder='Search...' onChange={this.onSearchChange} />
+              </FormGroup>
+              <Tree
+                contents={this.state.files}
+                onNodeClick={this.handleNodeClick}
+                onNodeCollapse={this.handleNodeCollapse}
+                onNodeExpand={this.handleNodeExpand}
+              />
+            </ControlGroup>
+            <ControlGroup vertical={true}  fill={true}>
+              <Media path={this.state.selectedImage} />
+            </ControlGroup>
+          </ControlGroup>
+          </div>
+        )}
+      </Dropzone>
     );
   }
 }
