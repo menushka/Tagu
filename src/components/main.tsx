@@ -4,10 +4,11 @@ import Dropzone from 'react-dropzone';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { ITreeNode, Tree, Dialog, Classes, MenuItem, Button } from '@blueprintjs/core';
+import { ITreeNode, Tree, MenuItem } from '@blueprintjs/core';
 import { MultiSelect } from '@blueprintjs/select';
 
 import { Media } from './media';
+import { NewFileDialog } from './newFileDialog';
 
 type MainProps = {};
 
@@ -41,7 +42,6 @@ export class Main extends React.Component<MainProps, MainState> {
     };
 
     this.onFileDrop = this.onFileDrop.bind(this);
-    this.onFileDropFinished = this.onFileDropFinished.bind(this);
   }
 
   private transformToFiles(images: Image[]): ITreeNodeFile[] {
@@ -122,36 +122,13 @@ export class Main extends React.Component<MainProps, MainState> {
     this.setState({ newFile: newFilePath });
   }
 
-  onFileDropFinished() {
-    this.setState({ newFile: '' });
-  }
-
   render() {
     return (
       <Dropzone onDrop={this.onFileDrop} noClick>
         {({getRootProps, getInputProps}) => (
           <div {...getRootProps()}>
           <input {...getInputProps()} />
-          <Dialog
-            title='Add new file...'
-            isOpen={this.state.newFile !== ''}
-            isCloseButtonShown={false}>
-            <div className={Classes.DIALOG_BODY}>
-              <img src={this.state.newFile} />
-            </div>
-            <div className={Classes.DIALOG_FOOTER}>
-              {/* <TagInput
-                  onChange={(values: string[]) => this.setState({ newFileTags: values })}
-                  values={this.state.newFileTags}
-              /> */}
-              {/* <TagMultiSelect
-                items={[]}
-                onItemSelect={}
-                itemRenderer={}
-                tagRenderer={}/> */}
-              <Button text='Click' onClick={this.onFileDropFinished}/>
-            </div>
-          </Dialog>
+          <NewFileDialog newFilePath={this.state.newFile} isOpen={this.state.newFile !== ''} onFinish={() => this.setState({ newFile: '' })} />
           <div style={{display: 'flex', flexDirection: 'row', width: '100vw', height: '100vh'}}>
             <div style={{width: '20vw', borderRight: '1px solid #eaeaea'}}>
               <TagMultiSelect
