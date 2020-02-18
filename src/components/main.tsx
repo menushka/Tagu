@@ -4,12 +4,13 @@ import Dropzone from 'react-dropzone';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { ITreeNode, Tree, InputGroup, FormGroup, ControlGroup } from '@blueprintjs/core';
+import { ITreeNode, Tree, InputGroup, Dialog, Classes, TagInput, Button, Icon } from '@blueprintjs/core';
 import { Media } from './media';
+import { IconNames } from '@blueprintjs/icons';
 
 type MainProps = {};
 
-type MainState = { files: ITreeNode[], selectedImage: string };
+type MainState = { files: ITreeNode[], selectedImage: string, newFile: string, newFileTags: string[] };
 
 interface ITreeNodeFile extends ITreeNode {
   file: string;
@@ -27,9 +28,11 @@ export class Main extends React.Component<MainProps, MainState> {
     this.tagsDB = new TagsDatabase();
     this.tagsDB.connect();
 
-    this.state = { files: this.transformToFiles(this.imagesDB.getAll()), selectedImage: '' };
+    this.state = { files: this.transformToFiles(this.imagesDB.getAll()), selectedImage: '', newFile: '', newFileTags: [] };
 
     this.onSearchChange = this.onSearchChange.bind(this);
+    this.onFileDrop = this.onFileDrop.bind(this);
+    this.onFileDropFinished = this.onFileDropFinished.bind(this);
   }
 
   private transformToFiles(images: Image[]): ITreeNodeFile[] {
@@ -105,32 +108,57 @@ export class Main extends React.Component<MainProps, MainState> {
 
   onFileDrop(acceptedFiles: File[]) {
     const file = acceptedFiles[0];
+    const newFilePath = path.join(__dirname, '../../', 'images', path.basename(file.path));
     fs.ensureDirSync(path.join(__dirname, '../../', 'images'));
-    fs.copySync(file.path, path.join(__dirname, '../../', 'images', path.basename(file.path)));
+    fs.copySync(file.path, newFilePath);
+    this.setState({ newFile: newFilePath });
+  }
+
+  onFileDropFinished() {
+    this.setState({ newFile: '' });
   }
 
   render() {
     return (
-      <Dropzone onDrop={this.onFileDrop}>
+      <Dropzone onDrop={this.onFileDrop} noClick>
         {({getRootProps, getInputProps}) => (
           <div {...getRootProps()}>
           <input {...getInputProps()} />
-          <ControlGroup style={{width: '100vw', height: '100vh'}}>
-            <ControlGroup vertical={true} style={{width: '20vw', borderRight: '1px solid #eaeaea'}}>
-              <FormGroup >
-                <InputGroup id='text-input' placeholder='Search...' onChange={this.onSearchChange} />
-              </FormGroup>
+          <Dialog
+            title='Add new file...'
+            isOpen={this.state.newFile !== ''}
+            isCloseButtonShown={false}>
+            <div className={Classes.DIALOG_BODY}>
+              <img src={this.state.newFile} />
+            </div>
+            <div className={Classes.DIALOG_FOOTER}>
+              <TagInput
+                  onChange={(values: string[]) => this.setState({ newFileTags: values })}
+                  values={this.state.newFileTags}
+              />
+              <Button text='Click' onClick={this.onFileDropFinished}/>
+            </div>
+          </Dialog>
+          <div style={{display: 'flex', flexDirection: 'row', width: '100vw', height: '100vh'}}>
+            <div style={{width: '20vw', borderRight: '1px solid #eaeaea'}}>
+              <InputGroup
+                id='text-input'
+                placeholder='Search...'
+                type='search'
+                leftIcon={<Icon icon={IconNames.SEARCH} />}
+                onChange={this.onSearchChange}
+                style={{}}/>
               <Tree
                 contents={this.state.files}
                 onNodeClick={this.handleNodeClick}
                 onNodeCollapse={this.handleNodeCollapse}
                 onNodeExpand={this.handleNodeExpand}
               />
-            </ControlGroup>
-            <ControlGroup vertical={true}  fill={true}>
+            </div>
+            <div style={{flexGrow: 1}}>
               <Media path={this.state.selectedImage} />
-            </ControlGroup>
-          </ControlGroup>
+            </div>
+          </div>
           </div>
         )}
       </Dropzone>
