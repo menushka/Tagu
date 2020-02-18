@@ -1,20 +1,23 @@
 import * as React from 'react';
-import { ImageDatabase as ImagesDatabase, Image, TagsDatabase } from '../database';
+import { ImageDatabase as ImagesDatabase, Image, TagsDatabase, Tag } from '../database';
 import Dropzone from 'react-dropzone';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { ITreeNode, Tree, InputGroup, Dialog, Classes, TagInput, Button, Icon } from '@blueprintjs/core';
+import { ITreeNode, Tree, Dialog, Classes, MenuItem, Button } from '@blueprintjs/core';
+import { MultiSelect } from '@blueprintjs/select';
+
 import { Media } from './media';
-import { IconNames } from '@blueprintjs/icons';
 
 type MainProps = {};
 
-type MainState = { files: ITreeNode[], selectedImage: string, newFile: string, newFileTags: string[] };
+type MainState = { files: ITreeNode[], tags: Tag[], selectedTags: Tag[], selectedImage: string, newFile: string, newFileTags: string[] };
 
 interface ITreeNodeFile extends ITreeNode {
   file: string;
 }
+
+const TagMultiSelect = MultiSelect.ofType<Tag>();
 
 export class Main extends React.Component<MainProps, MainState> {
 
@@ -28,9 +31,15 @@ export class Main extends React.Component<MainProps, MainState> {
     this.tagsDB = new TagsDatabase();
     this.tagsDB.connect();
 
-    this.state = { files: this.transformToFiles(this.imagesDB.getAll()), selectedImage: '', newFile: '', newFileTags: [] };
+    this.state = {
+      files: this.transformToFiles(this.imagesDB.getAll()),
+      tags: this.tagsDB.getAll(),
+      selectedTags: [],
+      selectedImage: '',
+      newFile: '',
+      newFileTags: []
+    };
 
-    this.onSearchChange = this.onSearchChange.bind(this);
     this.onFileDrop = this.onFileDrop.bind(this);
     this.onFileDropFinished = this.onFileDropFinished.bind(this);
   }
@@ -78,32 +87,31 @@ export class Main extends React.Component<MainProps, MainState> {
     }
   }
 
-  getFilteredImages(search: string): Image[] {
-    return this.imagesDB.getAll(`ANY tags.name CONTAINS '${search}'`);
-  }
-
-  getFilteredFiles(search: string): ITreeNode[] {
-    if (search === '#tags') {
-      const files: ITreeNode[] = [];
-      const tags = this.tagsDB.getAll();
-      for (const tag of tags) {
-        const tagFiles = this.transformToFiles(this.getFilteredImages(tag.name));
-        files.push({
-          id: `folder_${tag.name}`,
-          label: tag.name,
-          childNodes: tagFiles
-        });
-      }
-      return files;
+  getFilteredImages(search: Tag[]): Image[] {
+    if (search.length === 0) {
+      return this.imagesDB.getAll();
     } else {
-      return this.transformToFiles(this.getFilteredImages(search));
+      const filter = search.map(x => `ANY tags.name CONTAINS '${x.name}'`).join(' AND ');
+      return this.imagesDB.getAll(filter);
     }
   }
 
-  onSearchChange(event: React.ChangeEvent<HTMLElement>) {
-    this.setState({
-      files: this.getFilteredFiles((event.target as HTMLTextAreaElement).value)
-    });
+  getFilteredFiles(search: Tag[]): ITreeNode[] {
+    return this.transformToFiles(this.getFilteredImages(search));
+  }
+
+  getFilesByTag() {
+    const files: ITreeNode[] = [];
+    const tags = this.tagsDB.getAll();
+    for (const tag of tags) {
+      const tagFiles = this.transformToFiles(this.getFilteredImages([tag]));
+      files.push({
+        id: `folder_${tag.name}`,
+        label: tag.name,
+        childNodes: tagFiles
+      });
+    }
+    return files;
   }
 
   onFileDrop(acceptedFiles: File[]) {
@@ -132,24 +140,52 @@ export class Main extends React.Component<MainProps, MainState> {
               <img src={this.state.newFile} />
             </div>
             <div className={Classes.DIALOG_FOOTER}>
-              <TagInput
+              {/* <TagInput
                   onChange={(values: string[]) => this.setState({ newFileTags: values })}
                   values={this.state.newFileTags}
-              />
+              /> */}
+              {/* <TagMultiSelect
+                items={[]}
+                onItemSelect={}
+                itemRenderer={}
+                tagRenderer={}/> */}
               <Button text='Click' onClick={this.onFileDropFinished}/>
             </div>
           </Dialog>
           <div style={{display: 'flex', flexDirection: 'row', width: '100vw', height: '100vh'}}>
             <div style={{width: '20vw', borderRight: '1px solid #eaeaea'}}>
-              <InputGroup
-                id='text-input'
-                placeholder='Search...'
-                type='search'
-                leftIcon={<Icon icon={IconNames.SEARCH} />}
-                onChange={this.onSearchChange}
-                style={{}}/>
+              <TagMultiSelect
+                fill={true}
+                items={this.state.tags}
+                selectedItems={this.state.selectedTags}
+                onItemSelect={(tag) => {
+                  const currentTags = this.state.selectedTags;
+                  currentTags.push(tag);
+                  this.setState({ selectedTags: currentTags });
+                }}
+                itemRenderer={(tag, { modifiers, handleClick }) => {
+                  return (
+                    <MenuItem
+                      active={modifiers.active}
+                      key={tag.name}
+                      label={tag.name}
+                      onClick={handleClick}
+                      shouldDismissPopover={false}
+                  />
+                );
+                }}
+                tagRenderer={tag => tag.name}
+                tagInputProps={{
+                  onRemove: (_value, index) => {
+                    const currentTags = this.state.selectedTags;
+                    currentTags.splice(index, 1);
+                    this.setState({ selectedTags: currentTags });
+                  },
+                  placeholder: 'Search...',
+                  leftIcon: 'search'
+                }}/>
               <Tree
-                contents={this.state.files}
+                contents={this.getFilteredFiles(this.state.selectedTags)}
                 onNodeClick={this.handleNodeClick}
                 onNodeCollapse={this.handleNodeCollapse}
                 onNodeExpand={this.handleNodeExpand}
