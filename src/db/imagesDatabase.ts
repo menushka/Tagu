@@ -1,6 +1,8 @@
 import { BaseDatabase } from './baseDatabase';
 import { Image } from '../data/image';
+import { Tag } from '../data/tag';
 
 export class ImagesDatabase extends BaseDatabase<Image> {
-  name: string = 'Image';
+  name = 'Image';
+  schemas = [Image.schema, Tag.schema];
 }

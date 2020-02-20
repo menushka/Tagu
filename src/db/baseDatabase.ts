@@ -1,30 +1,15 @@
 import * as Realm from 'realm';
 
 export abstract class BaseDatabase<T> {
-  imageSchema: Realm.ObjectSchema = {
-    name: 'Image',
-    primaryKey: 'path',
-    properties: {
-      path: 'string',
-      fileType: 'string',
-      tags: 'Tag[]',
-    }
-  };
-  tagSchema: Realm.ObjectSchema = {
-    name: 'Tag',
-    primaryKey: 'name',
-    properties: {
-      name: 'string',
-    }
-  };
   abstract name: string;
+  abstract schemas: (Realm.ObjectSchema | Realm.ObjectClass)[];
 
   private realm: Realm;
 
   connect() {
     this.realm = new Realm({
       path: 'data/data.realm',
-      schema: [this.tagSchema, this.imageSchema]
+      schema: this.schemas
     });
   }
 
