@@ -1,6 +1,6 @@
 import * as Realm from 'realm';
 
-abstract class Database<T> {
+export abstract class BaseDatabase<T> {
   imageSchema: Realm.ObjectSchema = {
     name: 'Image',
     primaryKey: 'path',
@@ -50,33 +50,5 @@ abstract class Database<T> {
 
   close() {
     this.realm.close();
-  }
-}
-
-export class ImageDatabase extends Database<Image> {
-  name: string = 'Image';
-}
-
-export class Image {
-  path: string;
-  fileType: string;
-  tags: Tag[];
-
-  constructor(path: string, tags: string[] = []) {
-    this.path = path;
-    this.fileType = '';
-    this.tags = tags.map(x => new Tag(x));
-  }
-}
-
-export class TagsDatabase extends Database<Tag> {
-  name: string = 'Tag';
-}
-
-export class Tag {
-  name: string;
-
-  constructor(name: string) {
-    this.name = name;
   }
 }

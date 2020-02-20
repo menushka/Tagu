@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { ImageDatabase as ImagesDatabase, Image, TagsDatabase, Tag } from '../database';
 import Dropzone from 'react-dropzone';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -7,6 +6,10 @@ import * as path from 'path';
 import { ITreeNode, MenuItem } from '@blueprintjs/core';
 import { MultiSelect } from '@blueprintjs/select';
 
+import { Image } from '../data/image';
+import { Tag } from '../data/tag';
+import { ImagesDatabase } from '../db/imagesDatabase';
+import { TagsDatabase } from '../db/tagsDatabase';
 import { Media } from './media';
 import { NewFileDialog } from './newFileDialog';
 import { FileTree, ITreeNodeFile } from './fileTree';

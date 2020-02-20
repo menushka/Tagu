@@ -107,5 +107,5 @@ dist
 .vscode-test
 
 # Tagu specific
-data/
-images/
+/data/
+/images/
