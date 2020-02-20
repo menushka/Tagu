@@ -4,19 +4,16 @@ import Dropzone from 'react-dropzone';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { ITreeNode, Tree, MenuItem } from '@blueprintjs/core';
+import { ITreeNode, MenuItem } from '@blueprintjs/core';
 import { MultiSelect } from '@blueprintjs/select';
 
 import { Media } from './media';
 import { NewFileDialog } from './newFileDialog';
+import { FileTree, ITreeNodeFile } from './fileTree';
 
 type MainProps = {};
 
 type MainState = { files: ITreeNode[], tags: Tag[], selectedTags: Tag[], selectedImage: string, newFile: string, newFileTags: string[] };
-
-interface ITreeNodeFile extends ITreeNode {
-  file: string;
-}
 
 const TagMultiSelect = MultiSelect.ofType<Tag>();
 
@@ -52,39 +49,6 @@ export class Main extends React.Component<MainProps, MainState> {
         label: x.path
       } as ITreeNodeFile;
     });
-  }
-
-  private handleNodeClick = (nodeData: ITreeNode) => {
-    if ((nodeData.id as string).startsWith('file')) {
-      const originallySelected = nodeData.isSelected;
-      this.forEachNode(this.state.files, n => (n.isSelected = false));
-      nodeData.isSelected = originallySelected == null ? true : !originallySelected;
-
-      this.setState(this.state);
-      this.setState({
-        selectedImage: (nodeData as ITreeNodeFile).file as string
-      });
-    } else {
-      nodeData.isExpanded = !nodeData.isExpanded;
-      this.setState(this.state);
-    }
-  }
-
-  private handleNodeCollapse = (nodeData: ITreeNode) => {
-    nodeData.isExpanded = false;
-    this.setState(this.state);
-  }
-
-  private handleNodeExpand = (nodeData: ITreeNode) => {
-      nodeData.isExpanded = true;
-      this.setState(this.state);
-  }
-
-  private forEachNode(nodes: ITreeNode[], callback: (node: ITreeNode) => void) {
-    for (const node of nodes) {
-        callback(node);
-        this.forEachNode(node.childNodes ?? [], callback);
-    }
   }
 
   getFilteredImages(search: Tag[]): Image[] {
@@ -161,12 +125,7 @@ export class Main extends React.Component<MainProps, MainState> {
                   placeholder: 'Search...',
                   leftIcon: 'search'
                 }}/>
-              <Tree
-                contents={this.getFilteredFiles(this.state.selectedTags)}
-                onNodeClick={this.handleNodeClick}
-                onNodeCollapse={this.handleNodeCollapse}
-                onNodeExpand={this.handleNodeExpand}
-              />
+              <FileTree files={this.getFilteredFiles(this.state.selectedTags)} onSelect={path => this.setState({ selectedImage: path })}/>
             </div>
             <div style={{flexGrow: 1}}>
               <Media path={this.state.selectedImage} />
