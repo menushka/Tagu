@@ -3,8 +3,7 @@ import Dropzone from 'react-dropzone';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { ITreeNode, MenuItem } from '@blueprintjs/core';
-import { MultiSelect } from '@blueprintjs/select';
+import { ITreeNode } from '@blueprintjs/core';
 
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
@@ -13,12 +12,18 @@ import { TagsDatabase } from '../db/tagsDatabase';
 import { Media } from './media';
 import { NewFileDialog } from './newFileDialog';
 import { FileTree, ITreeNodeFile } from './fileTree';
+import { TagSearch } from './tagSearch';
 
 type MainProps = {};
 
-type MainState = { files: ITreeNode[], tags: Tag[], selectedTags: Tag[], selectedImage: string, newFile: string, newFileTags: string[] };
-
-const TagMultiSelect = MultiSelect.ofType<Tag>();
+type MainState = {
+  files: ITreeNode[],
+  tags: Tag[],
+  selectedTags: Tag[],
+  selectedImage: string,
+  newFile: string,
+  newFileTags: string[]
+};
 
 export class Main extends React.Component<MainProps, MainState> {
 
@@ -42,6 +47,8 @@ export class Main extends React.Component<MainProps, MainState> {
     };
 
     this.onFileDrop = this.onFileDrop.bind(this);
+    this.onSearchTagSelect = this.onSearchTagSelect.bind(this);
+    this.onSearchTagRemove = this.onSearchTagRemove.bind(this);
   }
 
   private transformToFiles(images: Image[]): ITreeNodeFile[] {
@@ -89,45 +96,35 @@ export class Main extends React.Component<MainProps, MainState> {
     this.setState({ newFile: newFilePath });
   }
 
+  onSearchTagSelect(tag: Tag) {
+    const currentTags = this.state.selectedTags;
+    currentTags.push(tag);
+    this.setState({ selectedTags: currentTags });
+  }
+
+  onSearchTagRemove(index: number) {
+    const currentTags = this.state.selectedTags;
+    currentTags.splice(index, 1);
+    this.setState({ selectedTags: currentTags });
+  }
+
   render() {
     return (
       <Dropzone onDrop={this.onFileDrop} noClick>
         {({getRootProps, getInputProps}) => (
           <div {...getRootProps()}>
           <input {...getInputProps()} />
-          <NewFileDialog newFilePath={this.state.newFile} isOpen={this.state.newFile !== ''} onFinish={() => this.setState({ newFile: '' })} />
+          <NewFileDialog
+            newFilePath={this.state.newFile}
+            isOpen={this.state.newFile !== ''}
+            onFinish={() => this.setState({ newFile: '' })} />
           <div style={{display: 'flex', flexDirection: 'row', width: '100vw', height: '100vh'}}>
             <div style={{width: '20vw', borderRight: '1px solid #eaeaea'}}>
-              <TagMultiSelect
-                fill={true}
-                items={this.state.tags}
-                selectedItems={this.state.selectedTags}
-                onItemSelect={(tag) => {
-                  const currentTags = this.state.selectedTags;
-                  currentTags.push(tag);
-                  this.setState({ selectedTags: currentTags });
-                }}
-                itemRenderer={(tag, { modifiers, handleClick }) => {
-                  return (
-                    <MenuItem
-                      active={modifiers.active}
-                      key={tag.name}
-                      label={tag.name}
-                      onClick={handleClick}
-                      shouldDismissPopover={false}
-                  />
-                );
-                }}
-                tagRenderer={tag => tag.name}
-                tagInputProps={{
-                  onRemove: (_value, index) => {
-                    const currentTags = this.state.selectedTags;
-                    currentTags.splice(index, 1);
-                    this.setState({ selectedTags: currentTags });
-                  },
-                  placeholder: 'Search...',
-                  leftIcon: 'search'
-                }}/>
+              <TagSearch
+                tags={this.state.tags}
+                selectedTags={this.state.selectedTags}
+                onSelect={this.onSearchTagSelect}
+                onRemove={this.onSearchTagRemove}/>
               <FileTree files={this.getFilteredFiles(this.state.selectedTags)} onSelect={path => this.setState({ selectedImage: path })}/>
             </div>
             <div style={{flexGrow: 1}}>
