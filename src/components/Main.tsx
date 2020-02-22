@@ -8,12 +8,12 @@ import { ITreeNode, NonIdealState } from '@blueprintjs/core';
 
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
-import { ImagesDatabase } from '../db/imagesDatabase';
-import { TagsDatabase } from '../db/tagsDatabase';
 import { Media } from './Media';
 import { NewFileDialog } from './NewFileDialog';
 import { FileTree, ITreeNodeFile } from './FileTree';
 import { TagSearch } from './TagSearch';
+import { ImagesModel } from '../models/imagesModel';
+import { TagsModel } from '../models/tagsModel';
 
 type MainProps = {};
 
@@ -28,24 +28,11 @@ type MainState = {
 
 export class Main extends React.Component<MainProps, MainState> {
 
-  imagesDB: ImagesDatabase;
-  tagsDB: TagsDatabase;
-
   constructor(props: MainProps) {
     super(props);
-    this.imagesDB = new ImagesDatabase();
-    this.imagesDB.connect();
-    this.tagsDB = new TagsDatabase();
-    this.tagsDB.connect();
 
-    this.state = {
-      files: this.transformToFiles(this.imagesDB.getAll()),
-      tags: this.tagsDB.getAll(),
-      selectedTags: [],
-      selectedImage: '',
-      newFile: '',
-      newFileTags: []
-    };
+    ImagesModel.instance.initalize();
+    TagsModel.instance.initalize();
 
     this.onFileDrop = this.onFileDrop.bind(this);
     this.onSearchTagSelect = this.onSearchTagSelect.bind(this);
@@ -62,24 +49,15 @@ export class Main extends React.Component<MainProps, MainState> {
     });
   }
 
-  getFilteredImages(search: Tag[]): Image[] {
-    if (search.length === 0) {
-      return this.imagesDB.getAll();
-    } else {
-      const filter = search.map(x => `ANY tags.name CONTAINS '${x.name}'`).join(' AND ');
-      return this.imagesDB.getAll(filter);
-    }
-  }
-
   getFilteredFiles(search: Tag[]): ITreeNode[] {
-    return this.transformToFiles(this.getFilteredImages(search));
+    return this.transformToFiles(ImagesModel.instance.getImages(search));
   }
 
   getFilesByTag() {
     const files: ITreeNode[] = [];
-    const tags = this.tagsDB.getAll();
+    const tags = TagsModel.instance.getTags();
     for (const tag of tags) {
-      const tagFiles = this.transformToFiles(this.getFilteredImages([tag]));
+      const tagFiles = this.transformToFiles(ImagesModel.instance.getImages([tag]));
       files.push({
         id: `folder_${tag.name}`,
         label: tag.name,
