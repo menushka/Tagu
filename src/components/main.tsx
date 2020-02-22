@@ -2,8 +2,9 @@ import * as React from 'react';
 import Dropzone from 'react-dropzone';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import SplitPane from 'react-split-pane';
 
-import { ITreeNode } from '@blueprintjs/core';
+import { ITreeNode, NonIdealState } from '@blueprintjs/core';
 
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
@@ -56,7 +57,7 @@ export class Main extends React.Component<MainProps, MainState> {
       return {
         id: `file_${x.path}`,
         file: x.path,
-        label: x.path
+        label: path.basename(x.path)
       } as ITreeNodeFile;
     });
   }
@@ -118,8 +119,8 @@ export class Main extends React.Component<MainProps, MainState> {
             newFilePath={this.state.newFile}
             isOpen={this.state.newFile !== ''}
             onFinish={() => this.setState({ newFile: '' })} />
-          <div style={{display: 'flex', flexDirection: 'row', width: '100vw', height: '100vh'}}>
-            <div style={{width: '20vw', borderRight: '1px solid #eaeaea'}}>
+          <SplitPane minSize={200} >
+            <div style={{height: '100vh'}}>
               <TagSearch
                 tags={this.state.tags}
                 selectedTags={this.state.selectedTags}
@@ -127,10 +128,17 @@ export class Main extends React.Component<MainProps, MainState> {
                 onRemove={this.onSearchTagRemove}/>
               <FileTree files={this.getFilteredFiles(this.state.selectedTags)} onSelect={path => this.setState({ selectedImage: path })}/>
             </div>
-            <div style={{flexGrow: 1}}>
-              <Media path={this.state.selectedImage} />
+            <div style={{height: '100vh'}}>
+              { this.state.selectedImage ? (
+                <Media path={this.state.selectedImage} />
+              ) : (
+                <NonIdealState
+                  icon={'unresolve'}
+                  title='Nothing selected'
+                  description={'No displayable item is selected in the left column.'} />
+              )}
             </div>
-          </div>
+          </SplitPane>
           </div>
         )}
       </Dropzone>

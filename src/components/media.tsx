@@ -8,9 +8,7 @@ type MediaState = {};
 export class Media extends React.Component<MediaProps, MediaState> {
   render() {
     return (
-      <div style={{display: 'inline-block', width: '100%', height: '100%'}} >
-        <img src={path.join(__dirname, '../../', this.props.path)} style={{display: 'block', maxWidth: '100%', maxHeight: '100%', margin: 'auto'}} />
-      </div>
+      <img src={path.join(__dirname, '../../', this.props.path)} style={{width: '100%', height: '100%', objectFit: 'contain'}} />
     );
   }
 }
