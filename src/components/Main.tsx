@@ -1,7 +1,6 @@
 import * as React from 'react';
-import Dropzone from 'react-dropzone';
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import Dropzone from 'react-dropzone';
 import SplitPane from 'react-split-pane';
 
 import { ITreeNode, NonIdealState } from '@blueprintjs/core';
@@ -22,8 +21,7 @@ type MainState = {
   tags: Tag[],
   selectedTags: Tag[],
   selectedImage: string,
-  newFile: string,
-  newFileTags: string[]
+  fileDropped: string | null
 };
 
 export class Main extends React.Component<MainProps, MainState> {
@@ -41,8 +39,7 @@ export class Main extends React.Component<MainProps, MainState> {
       tags: TagsModel.instance.getTags(),
       selectedTags: [],
       selectedImage: '',
-      newFile: '',
-      newFileTags: []
+      fileDropped: null
     };
 
   }
@@ -77,10 +74,7 @@ export class Main extends React.Component<MainProps, MainState> {
 
   onFileDrop(acceptedFiles: File[]) {
     const file = acceptedFiles[0];
-    const newFilePath = path.join(__dirname, '../../', 'images', path.basename(file.path));
-    fs.ensureDirSync(path.join(__dirname, '../../', 'images'));
-    fs.copySync(file.path, newFilePath);
-    this.setState({ newFile: newFilePath });
+    this.setState({ fileDropped: file.path });
   }
 
   render() {
@@ -90,9 +84,8 @@ export class Main extends React.Component<MainProps, MainState> {
           <div {...getRootProps()}>
           <input {...getInputProps()} />
           <NewFileDialog
-            newFilePath={this.state.newFile}
-            isOpen={this.state.newFile !== ''}
-            onFinish={() => this.setState({ newFile: '' })} />
+            newFilePath={this.state.fileDropped}
+            onFinish={() => this.setState({ fileDropped: null })} />
           <SplitPane minSize={200} >
             <div style={{height: '100vh'}}>
               <TagSearch

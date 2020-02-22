@@ -30,4 +30,8 @@ export class ImagesModel {
       return this.db.getAll(filter);
     }
   }
+
+  addImage(image: Image) {
+    this.db.write(image);
+  }
 }
