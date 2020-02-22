@@ -35,8 +35,16 @@ export class Main extends React.Component<MainProps, MainState> {
     TagsModel.instance.initalize();
 
     this.onFileDrop = this.onFileDrop.bind(this);
-    this.onSearchTagSelect = this.onSearchTagSelect.bind(this);
-    this.onSearchTagRemove = this.onSearchTagRemove.bind(this);
+
+    this.state = {
+      files: this.getFilteredFiles(),
+      tags: TagsModel.instance.getTags(),
+      selectedTags: [],
+      selectedImage: '',
+      newFile: '',
+      newFileTags: []
+    };
+
   }
 
   private transformToFiles(images: Image[]): ITreeNodeFile[] {
@@ -49,7 +57,7 @@ export class Main extends React.Component<MainProps, MainState> {
     });
   }
 
-  getFilteredFiles(search: Tag[]): ITreeNode[] {
+  getFilteredFiles(search: Tag[] = []): ITreeNode[] {
     return this.transformToFiles(ImagesModel.instance.getImages(search));
   }
 
@@ -75,18 +83,6 @@ export class Main extends React.Component<MainProps, MainState> {
     this.setState({ newFile: newFilePath });
   }
 
-  onSearchTagSelect(tag: Tag) {
-    const currentTags = this.state.selectedTags;
-    currentTags.push(tag);
-    this.setState({ selectedTags: currentTags });
-  }
-
-  onSearchTagRemove(index: number) {
-    const currentTags = this.state.selectedTags;
-    currentTags.splice(index, 1);
-    this.setState({ selectedTags: currentTags });
-  }
-
   render() {
     return (
       <Dropzone onDrop={this.onFileDrop} noClick>
@@ -101,9 +97,7 @@ export class Main extends React.Component<MainProps, MainState> {
             <div style={{height: '100vh'}}>
               <TagSearch
                 tags={this.state.tags}
-                selectedTags={this.state.selectedTags}
-                onSelect={this.onSearchTagSelect}
-                onRemove={this.onSearchTagRemove}/>
+                onChange={(tags) => this.setState({ selectedTags: tags })}/>
               <FileTree files={this.getFilteredFiles(this.state.selectedTags)} onSelect={path => this.setState({ selectedImage: path })}/>
             </div>
             <div style={{height: '100vh'}}>

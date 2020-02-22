@@ -4,22 +4,63 @@ import { MultiSelect } from '@blueprintjs/select';
 
 import { Tag } from '../data/tag';
 
-type TagSearchProps = { tags: Tag[], selectedTags: Tag[], onSelect: (tag: Tag) => void, onRemove: (index: number) => void };
+type TagSearchProps = { tags: Tag[], onChange: (tags: Tag[]) => void, create?: boolean };
 
-type TagSearchState = {};
+type TagSearchState = { tags: Tag[], selectedTags: Tag[], newTags: Tag[] };
 
 const TagMultiSelect = MultiSelect.ofType<Tag>();
 
 export class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
+
+  constructor(props: TagSearchProps) {
+    super(props);
+
+    this.onSelect = this.onSelect.bind(this);
+    this.onRemove = this.onRemove.bind(this);
+
+    this.state = {
+      tags: this.props.tags,
+      selectedTags: [],
+      newTags: []
+    };
+  }
+
+  onSelect(tag: Tag) {
+    const currentTags = this.state.selectedTags;
+    currentTags.push(tag);
+    this.setState({ selectedTags: currentTags });
+    this.props.onChange(this.state.selectedTags);
+  }
+
+  onRemove(index: number) {
+    const currentTags = this.state.selectedTags;
+    const removedTag = currentTags[index];
+    currentTags.splice(index, 1);
+    this.setState({ selectedTags: currentTags });
+
+    const currentNewTags = this.state.newTags;
+    const newIndex = this.state.newTags.indexOf(removedTag);
+    if (newIndex != -1) {
+      currentNewTags.splice(newIndex, 1);
+      this.setState({ newTags: currentNewTags });
+    }
+
+    this.props.onChange(currentTags.concat(currentNewTags));
+  }
+
+  onCreate(query: string) {
+    return new Tag(query);
+  }
+
   render() {
     return (
       <TagMultiSelect
         fill={true}
         items={this.props.tags}
-        itemPredicate={(query, tag) => !this.props.selectedTags.includes(tag) && tag.name.includes(query)}
+        itemPredicate={(query, tag) => !this.state.selectedTags.includes(tag) && tag.name.includes(query)}
         resetOnSelect={true}
-        selectedItems={this.props.selectedTags}
-        onItemSelect={this.props.onSelect}
+        selectedItems={this.state.selectedTags}
+        onItemSelect={this.onSelect}
         itemRenderer={(tag, { modifiers, handleClick }) => {
           return (
             <MenuItem
@@ -27,17 +68,31 @@ export class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
               key={tag.name}
               label={tag.name}
               onClick={handleClick}
-              shouldDismissPopover={false}
+              shouldDismissPopover={true}
           />
         );
         }}
         tagRenderer={tag => tag.name}
         tagInputProps={{
           onRemove: (_value, index) => {
-            this.props.onRemove(index);
+            this.onRemove(index);
           },
           placeholder: 'Search...',
           leftIcon: 'search'
+        }}
+        noResults={<MenuItem disabled={true} text='No more tags.' />}
+        createNewItemFromQuery={this.props.create ? this.onCreate : undefined}
+        createNewItemRenderer={(query, active, handleClick) => {
+          return (
+            <MenuItem
+              active={active}
+              key={'create_new_tag'}
+              icon='add'
+              label={`Create new tag '${query}'`}
+              onClick={handleClick}
+              shouldDismissPopover={true}
+          />
+        );
         }}/>
     );
   }

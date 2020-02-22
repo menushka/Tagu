@@ -26,7 +26,7 @@ export class ImagesModel {
     if (search.length === 0) {
       return this.db.getAll();
     } else {
-      const filter = search.map(x => `ANY tags.name CONTAINS '${x.name}'`).join(' AND ');
+      const filter = search.map(x => `ANY tags.name ==[c] '${x.name}'`).join(' AND ');
       return this.db.getAll(filter);
     }
   }
