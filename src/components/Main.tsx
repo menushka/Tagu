@@ -10,10 +10,10 @@ import { Image } from '../data/image';
 import { Tag } from '../data/tag';
 import { ImagesDatabase } from '../db/imagesDatabase';
 import { TagsDatabase } from '../db/tagsDatabase';
-import { Media } from './media';
-import { NewFileDialog } from './newFileDialog';
-import { FileTree, ITreeNodeFile } from './fileTree';
-import { TagSearch } from './tagSearch';
+import { Media } from './Media';
+import { NewFileDialog } from './NewFileDialog';
+import { FileTree, ITreeNodeFile } from './FileTree';
+import { TagSearch } from './TagSearch';
 
 type MainProps = {};
 
