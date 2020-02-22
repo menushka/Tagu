@@ -91,7 +91,9 @@ export class Main extends React.Component<MainProps, MainState> {
               <TagSearch
                 tags={this.state.tags}
                 onChange={(tags) => this.setState({ selectedTags: tags })}/>
-              <FileTree files={this.getFilteredFiles(this.state.selectedTags)} onSelect={path => this.setState({ selectedImage: path })}/>
+              <FileTree
+                files={this.getFilteredFiles(this.state.selectedTags)}
+                onSelect={path => this.setState({ selectedImage: path })}/>
             </div>
             <div style={{height: '100vh'}}>
               { this.state.selectedImage ? (

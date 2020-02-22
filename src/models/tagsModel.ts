@@ -24,6 +24,6 @@ export class TagsModel {
   }
 
   getTags(): Tag[] {
-    return this.db.getAll();
+    return this.db.query();
   }
 }

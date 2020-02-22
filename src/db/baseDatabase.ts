@@ -13,7 +13,7 @@ export abstract class BaseDatabase<T> {
     });
   }
 
-  getAll(filter: string = ''): T[] {
+  query(filter: string = ''): T[] {
     if (filter != '') {
       return this.realm.objects<T>(this.name).filtered(filter).map(x => x);
     } else {
@@ -29,6 +29,18 @@ export abstract class BaseDatabase<T> {
     this.realm.write(() => {
       for (const entry of entries) {
         this.realm.create(this.name, entry, true);
+      }
+    });
+  }
+
+  delete(entry: T) {
+    this.deleteMultiple([entry]);
+  }
+
+  deleteMultiple(entries: T[]) {
+    this.realm.write(() => {
+      for (const entry of entries) {
+        this.realm.delete(entry);
       }
     });
   }

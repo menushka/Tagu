@@ -24,14 +24,18 @@ export class ImagesModel {
 
   getImages(search: Tag[] = []): Image[] {
     if (search.length === 0) {
-      return this.db.getAll();
+      return this.db.query();
     } else {
       const filter = search.map(x => `ANY tags.name ==[c] '${x.name}'`).join(' AND ');
-      return this.db.getAll(filter);
+      return this.db.query(filter);
     }
   }
 
   addImage(image: Image) {
     this.db.write(image);
+  }
+
+  removeImage(image: Image) {
+    this.db.delete(image);
   }
 }
