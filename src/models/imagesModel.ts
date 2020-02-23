@@ -1,3 +1,6 @@
+import * as fs from 'fs-extra';
+import * as path from 'path';
+
 import { ImagesDatabase } from '../db/imagesDatabase';
 
 import { Image } from '../data/image';
@@ -31,11 +34,21 @@ export class ImagesModel {
     }
   }
 
-  addImage(image: Image) {
-    this.db.write(image);
+  observe(onUpdate: () => void) {
+    this.db.observe(onUpdate);
+  }
+
+  addImage(addImagePath: string, tags: Tag[]) {
+    const fileName = path.basename(addImagePath);
+    const newFilePath = path.join(__dirname, '../../', 'images', fileName);
+    fs.ensureDirSync(path.join(__dirname, '../../', 'images'));
+    fs.copySync(addImagePath, newFilePath);
+    this.db.write(new Image(fileName, tags));
   }
 
   removeImage(image: Image) {
+    const imagePath = Image.getAbsolutePath(image);
     this.db.delete(image);
+    fs.removeSync(imagePath);
   }
 }

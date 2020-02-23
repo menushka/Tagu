@@ -1,14 +1,15 @@
 import * as React from 'react';
-import * as path from 'path';
 
-type MediaProps = { path: string };
+import { Image } from '../data/image';
+
+type MediaProps = { image: Image };
 
 type MediaState = {};
 
 export class Media extends React.Component<MediaProps, MediaState> {
   render() {
     return (
-      <img src={path.join(__dirname, '../../images/', this.props.path)} style={{width: '100%', height: '100%', objectFit: 'contain'}} />
+      <img src={Image.getAbsolutePath(this.props.image)} style={{width: '100%', height: '100%', objectFit: 'contain'}} />
     );
   }
 }

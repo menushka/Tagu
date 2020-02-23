@@ -26,4 +26,8 @@ export class TagsModel {
   getTags(): Tag[] {
     return this.db.query();
   }
+
+  observe(onUpdate: () => void) {
+    this.db.observe(onUpdate);
+  }
 }

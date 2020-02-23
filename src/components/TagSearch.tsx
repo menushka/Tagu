@@ -93,6 +93,11 @@ export class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
               shouldDismissPopover={true}
           />
         );
+        }}
+        popoverProps={{
+          modifiers: {
+            arrow: { enabled: false}
+          }
         }}/>
     );
   }

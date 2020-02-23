@@ -1,4 +1,5 @@
 import * as Realm from 'realm';
+import * as path from 'path';
 import { Tag } from './tag';
 
 export class Image {
@@ -20,5 +21,9 @@ export class Image {
     this.path = path;
     this.fileType = '';
     this.tags = tags;
+  }
+
+  static getAbsolutePath(image: Image) {
+    return path.join(__dirname, '../../', 'images', image.path);
   }
 }

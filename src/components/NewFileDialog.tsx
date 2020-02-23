@@ -1,6 +1,4 @@
 import * as React from 'react';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import { Dialog, Classes, Button } from '@blueprintjs/core';
 
 import { TagSearch } from './tagSearch';
@@ -8,11 +6,10 @@ import { TagSearch } from './tagSearch';
 import { TagsModel } from '../models/tagsModel';
 import { Tag } from '../data/tag';
 import { ImagesModel } from '../models/imagesModel';
-import { Image } from '../data/image';
 
 type NewFileDialogProps = { newFilePath: string | null, onFinish: () => void };
 
-type NewFileDialogState = { selectedTags: Tag[] };
+type NewFileDialogState = { tags: Tag[], selectedTags: Tag[] };
 
 export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDialogState> {
   constructor(props: NewFileDialogProps) {
@@ -20,17 +17,15 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
 
     this.onFinish = this.onFinish.bind(this);
 
-    this.state = { selectedTags: [] };
+    this.state = { tags: TagsModel.instance.getTags(), selectedTags: [] };
+  }
+
+  componentDidMount() {
+    this.setState({ tags: TagsModel.instance.getTags(), selectedTags: [] });
   }
 
   onFinish() {
-    const fileName = path.basename(this.props.newFilePath!);
-    const newFilePath = path.join(__dirname, '../../', 'images', fileName);
-    fs.ensureDirSync(path.join(__dirname, '../../', 'images'));
-    fs.copySync(this.props.newFilePath!, newFilePath);
-    ImagesModel.instance.addImage(new Image(fileName, this.state.selectedTags));
-
-    this.setState({ selectedTags: [] });
+    ImagesModel.instance.addImage(this.props.newFilePath!, this.state.selectedTags);
     this.props.onFinish();
   }
 
@@ -45,7 +40,7 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <TagSearch
-            tags={TagsModel.instance.getTags()}
+            tags={this.state.tags}
             onChange={(tags) => this.setState({ selectedTags: tags })}
             create={true}/>
           <Button text='Click' onClick={this.onFinish}/>

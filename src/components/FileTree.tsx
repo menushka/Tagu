@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { ITreeNode, Tree, ContextMenu, Menu, MenuItem } from '@blueprintjs/core';
 import { ImagesModel } from '../models/imagesModel';
+import { Image } from '../data/image';
 
-type FileTreeProps = { files: ITreeNode[], onSelect: (path: string) => void };
+type FileTreeProps = { files: ITreeNode[], onSelect: (image: Image) => void };
 
-type FileTreeState = { files: ITreeNode[]};
+type FileTreeState = {};
 
 export interface ITreeNodeFile extends ITreeNode {
-  file: string;
+  image: Image;
 }
 
 export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
@@ -28,11 +29,11 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
   private handleNodeClick = (nodeData: ITreeNode) => {
     if ((nodeData.id as string).startsWith('file')) {
       const originallySelected = nodeData.isSelected;
-      this.forEachNode(this.state.files, n => (n.isSelected = false));
+      this.forEachNode(this.props.files, n => (n.isSelected = false));
       nodeData.isSelected = originallySelected == null ? true : !originallySelected;
 
       this.setState(this.state);
-      this.props.onSelect((nodeData as ITreeNodeFile).file as string);
+      this.props.onSelect((nodeData as ITreeNodeFile).image);
     } else {
       nodeData.isExpanded = !nodeData.isExpanded;
       this.setState(this.state);
@@ -69,7 +70,7 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
   render() {
     return (
       <Tree
-        contents={this.state.files}
+        contents={this.props.files}
         onNodeClick={this.handleNodeClick}
         onNodeCollapse={this.handleNodeCollapse}
         onNodeExpand={this.handleNodeExpand}

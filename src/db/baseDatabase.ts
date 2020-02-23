@@ -5,20 +5,18 @@ export abstract class BaseDatabase<T> {
   abstract schemas: (Realm.ObjectSchema | Realm.ObjectClass)[];
 
   private realm: Realm;
+  private onUpdateCallbacks: (() => void)[] = [];
 
   connect() {
     this.realm = new Realm({
       path: 'data/data.realm',
       schema: this.schemas
     });
-  }
-
-  query(filter: string = ''): T[] {
-    if (filter != '') {
-      return this.realm.objects<T>(this.name).filtered(filter).map(x => x);
-    } else {
-      return this.realm.objects<T>(this.name).map(x => x);
-    }
+    this.realm.addListener('change', () => {
+      for (const callback of this.onUpdateCallbacks) {
+        callback();
+      }
+    });
   }
 
   write(entry: T) {
@@ -43,6 +41,18 @@ export abstract class BaseDatabase<T> {
         this.realm.delete(entry);
       }
     });
+  }
+
+  query(filter: string = '', realm: Realm = this.realm): T[] {
+    if (filter != '') {
+      return realm.objects<T>(this.name).filtered(filter).map(x => x);
+    } else {
+      return realm.objects<T>(this.name).map(x => x);
+    }
+  }
+
+  observe(onUpdate: () => void) {
+    this.onUpdateCallbacks.push(onUpdate);
   }
 
   close() {

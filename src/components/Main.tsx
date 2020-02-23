@@ -20,7 +20,7 @@ type MainState = {
   files: ITreeNode[],
   tags: Tag[],
   selectedTags: Tag[],
-  selectedImage: string,
+  selectedImage: Image | undefined,
   fileDropped: string | null
 };
 
@@ -38,18 +38,25 @@ export class Main extends React.Component<MainProps, MainState> {
       files: this.getFilteredFiles(),
       tags: TagsModel.instance.getTags(),
       selectedTags: [],
-      selectedImage: '',
+      selectedImage: undefined,
       fileDropped: null
     };
 
+    ImagesModel.instance.observe(() => {
+      this.forceUpdate();
+    });
+
+    TagsModel.instance.observe(() => {
+      this.forceUpdate();
+    });
   }
 
   private transformToFiles(images: Image[]): ITreeNodeFile[] {
-    return images.map(x => {
+    return images.map(image => {
       return {
-        id: `file_${x.path}`,
-        file: x.path,
-        label: path.basename(x.path)
+        id: `file_${image.path}`,
+        label: path.basename(image.path),
+        image: image
       } as ITreeNodeFile;
     });
   }
@@ -97,7 +104,7 @@ export class Main extends React.Component<MainProps, MainState> {
             </div>
             <div style={{height: '100vh'}}>
               { this.state.selectedImage ? (
-                <Media path={this.state.selectedImage} />
+                <Media image={this.state.selectedImage} />
               ) : (
                 <NonIdealState
                   icon={'unresolve'}
