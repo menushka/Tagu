@@ -30,4 +30,8 @@ export class TagsModel {
   observe(onUpdate: () => void) {
     this.db.observe(onUpdate);
   }
+
+  removeTag(tag: Tag) {
+    this.db.delete(tag);
+  }
 }

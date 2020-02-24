@@ -7,12 +7,14 @@ import { Tag } from '../data/tag';
 import { ImagesModel } from '../models/imagesModel';
 import { TagsModel } from '../models/tagsModel';
 
-type FileTreeProps = { tags: Tag[], onSelect: (image: Image | undefined) => void };
+type FileTreeProps = { tags?: Tag[], byTag?: boolean, onSelect: (image: Image | undefined) => void };
 
-type FileTreeState = { files: ITreeNodeFile[] };
+type FileTreeState = { tags?: Tag[], files: ITreeNodeFile[] };
 
 export interface ITreeNodeFile extends ITreeNode {
-  image: Image;
+  type: 'file' | 'folder';
+  image?: Image;
+  tag?: Tag;
 }
 
 export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
@@ -29,13 +31,19 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
     this.contextMenuOnEdit = this.contextMenuOnEdit.bind(this);
     this.contextMenuOnDelete = this.contextMenuOnDelete.bind(this);
 
-    this.state = { files: this.getFilteredFiles(this.props.tags) };
-
     ImagesModel.instance.observe(this.updateFileState);
+    TagsModel.instance.observe(this.updateFileState);
+
+    this.state = {
+      tags: this.props.tags,
+      files: this.props.byTag ? this.getFilesByTag() : this.getFilteredFiles(this.props.tags)
+    };
   }
 
   updateFileState() {
-    this.setState({ files: this.getFilteredFiles(this.props.tags) });
+    this.setState({
+      files: this.props.byTag ? this.getFilesByTag() : this.getFilteredFiles(this.state.tags)
+    });
   }
 
   transformToFiles(images: Image[]): ITreeNodeFile[] {
@@ -43,6 +51,7 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
       return {
         id: `file_${image.path}`,
         label: path.basename(image.path),
+        type: 'file',
         image: image
       } as ITreeNodeFile;
     });
@@ -52,14 +61,16 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
     return this.transformToFiles(ImagesModel.instance.getImages(search));
   }
 
-  getFilesByTag() {
-    const files: ITreeNode[] = [];
+  getFilesByTag(): ITreeNodeFile[] {
+    const files: ITreeNodeFile[] = [];
     const tags = TagsModel.instance.getTags();
     for (const tag of tags) {
       const tagFiles = this.transformToFiles(ImagesModel.instance.getImages([tag]));
       files.push({
         id: `folder_${tag.name}`,
         label: tag.name,
+        type: 'folder',
+        tag: tag,
         childNodes: tagFiles
       });
     }
@@ -101,19 +112,22 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
     console.log(`Edit not implemented yet. Node: ${node}`);
   }
 
-  private contextMenuOnDelete(node: ITreeNode) {
+  private contextMenuOnDelete(node: ITreeNodeFile) {
     if (node.isSelected) { this.props.onSelect(undefined); }
-    this.updateFileState();
-
-    const deleteImagePath = node.id.toString().substr(5);
-    const deleteImage = ImagesModel.instance.getImages().find(x => x.path == deleteImagePath);
-    ImagesModel.instance.removeImage(deleteImage!);
+    switch (node.type) {
+      case 'file':
+        ImagesModel.instance.removeImage(node.image!);
+        break;
+      case 'folder':
+        TagsModel.instance.removeTag(node.tag!);
+        break;
+    }
   }
 
   componentWillReceiveProps(nextProps: FileTreeProps) {
-    if (this.props.tags != nextProps.tags) {
+    this.setState({ tags: nextProps.tags }, () => {
       this.updateFileState();
-    }
+    });
   }
 
   render() {
@@ -129,8 +143,8 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
           const menu = React.createElement(
               Menu,
               {}, // empty props
-              <MenuItem onClick={() => this.contextMenuOnEdit(node)} text='Edit' />,
-              <MenuItem onClick={() => this.contextMenuOnDelete(node)} text='Delete' />
+              <MenuItem onClick={() => this.contextMenuOnEdit(node as ITreeNodeFile)} text='Edit' />,
+              <MenuItem onClick={() => this.contextMenuOnDelete(node as ITreeNodeFile)} text='Delete' />
           );
 
           ContextMenu.show(menu, { left: e.clientX, top: e.clientY }, () => {

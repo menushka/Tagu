@@ -34,7 +34,7 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
       <Dialog
         title='Add new file...'
         isOpen={this.props.newFilePath != null}
-        isCloseButtonShown={false}>
+        isCloseButtonShown={true}>
         <div className={Classes.DIALOG_BODY}>
           <img src={this.props.newFilePath!} style={{height: '30vh', width: '100%', objectFit: 'contain'}} />
         </div>
