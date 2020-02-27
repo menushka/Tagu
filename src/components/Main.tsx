@@ -53,6 +53,7 @@ export class Main extends React.Component<MainProps, MainState> {
           <input {...getInputProps()} />
           <NewFileDialog
             newFilePath={this.state.fileDropped}
+            onClose={() => this.setState({ fileDropped: null })}
             onFinish={() => this.setState({ fileDropped: null })} />
           <SplitPane minSize={250} >
             <div style={{height: '100vh'}}>

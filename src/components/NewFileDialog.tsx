@@ -7,7 +7,7 @@ import { TagsModel } from '../models/tagsModel';
 import { Tag } from '../data/tag';
 import { ImagesModel } from '../models/imagesModel';
 
-type NewFileDialogProps = { newFilePath: string | null, onFinish: () => void };
+type NewFileDialogProps = { newFilePath: string | null, onClose: () => void,  onFinish: () => void };
 
 type NewFileDialogState = { tags: Tag[], selectedTags: Tag[] };
 
@@ -25,7 +25,7 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
   }
 
   onFinish() {
-    ImagesModel.instance.addImage(this.props.newFilePath!, this.state.selectedTags);
+    ImagesModel.instance.addImage(this.props.newFilePath!, this.state.selectedTags.filter(x => x.name.length > 0));
     this.props.onFinish();
   }
 
@@ -34,7 +34,8 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
       <Dialog
         title='Add new file...'
         isOpen={this.props.newFilePath != null}
-        isCloseButtonShown={true}>
+        isCloseButtonShown={true}
+        onClose={this.props.onClose}>
         <div className={Classes.DIALOG_BODY}>
           <img src={this.props.newFilePath!} style={{height: '30vh', width: '100%', objectFit: 'contain'}} />
         </div>

@@ -125,9 +125,11 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
   }
 
   componentWillReceiveProps(nextProps: FileTreeProps) {
-    this.setState({ tags: nextProps.tags }, () => {
-      this.updateFileState();
-    });
+    if (this.state.tags !== nextProps.tags) {
+      this.setState({ tags: nextProps.tags }, () => {
+        this.updateFileState();
+      });
+    }
   }
 
   render() {
