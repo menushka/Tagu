@@ -44,7 +44,7 @@ export class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDi
             tags={this.state.tags}
             onChange={(tags) => this.setState({ selectedTags: tags })}
             create={true}/>
-          <Button text='Click' onClick={this.onFinish}/>
+          <Button text='Add File' onClick={this.onFinish} icon='add' fill={true} style={{ marginTop: '10px' }}/>
         </div>
       </Dialog>
     );
