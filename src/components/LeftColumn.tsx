@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Tabs, Tab } from '@blueprintjs/core';
+import { Tabs, Tab, Button } from '@blueprintjs/core';
 
 import { TagSearch } from './tagSearch';
 import { FileTree } from './fileTree';
@@ -39,24 +39,36 @@ export class LeftColumn extends React.Component<LeftColumnProps, LeftColumnState
     this.props.onImageChange(image);
   }
 
+  onExport() {
+    console.log('Export');
+  }
+
   render() {
     return (
       <div style={{height: '100vh'}}>
-        <Tabs id='columnTabs'>
-          <Tab id='search' title='Search' panel={
-            <div>
+        <Tabs id='columnTabs' className='flex-column full-height'>
+          <Tab id='search' title='Search' panelClassName='flex-grow flex-column' panel={
+            <div className='flex-column flex-grow'>
               <TagSearch
                 tags={this.state.tags}
                 onChange={this.onSelectedTagsChange}/>
-              <FileTree
-                tags={this.state.selectedTags}
-                onSelect={this.onSelectedImageChange}/>
+              <div className='flex-grow'>
+                <FileTree
+                  tags={this.state.selectedTags}
+                  onSelect={this.onSelectedImageChange}/>
+              </div>
+              <Button text='Export' icon='export' fill={true} onClick={this.onExport}/>
             </div>
           } />
-          <Tab id='folders' title='By Tag' panel={
-            <FileTree
-              byTag={true}
-              onSelect={this.onSelectedImageChange}/>
+          <Tab id='folders' title='By Tag' panelClassName='flex-grow flex-column' panel={
+            <div className='flex-column flex-grow'>
+              <div className='flex-grow'>
+                <FileTree
+                  byTag={true}
+                  onSelect={this.onSelectedImageChange}/>
+              </div>
+              <Button text='Export' icon='export' fill={true} onClick={this.onExport}/>
+            </div>
           } />
         </Tabs>
       </div>
