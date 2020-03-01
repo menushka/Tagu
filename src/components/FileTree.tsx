@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as path from 'path';
 import { ITreeNode, Tree, ContextMenu, Menu, MenuItem } from '@blueprintjs/core';
 
 import { Dispatch } from 'redux';
@@ -11,10 +10,11 @@ import { Image } from '../data/image';
 import { Tag } from '../data/tag';
 import { ImagesModel } from '../models/imagesModel';
 import { TagsModel } from '../models/tagsModel';
+import { selectFile } from '../actions/actions';
 
-type FileTreeProps = { tags?: Tag[], byTag?: boolean, onSelect: (image: Image | undefined) => void };
+type OwnProps = { byTag?: boolean };
 
-type FileTreeState = { tags?: Tag[], files: ITreeNodeFile[] };
+type FileTreeProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
 export interface ITreeNodeFile extends ITreeNode {
   type: 'file' | 'folder';
@@ -22,11 +22,9 @@ export interface ITreeNodeFile extends ITreeNode {
   tag?: Tag;
 }
 
-export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
+class FileTree extends React.Component<FileTreeProps, {}> {
   constructor(props: FileTreeProps) {
     super(props);
-
-    this.updateFileState = this.updateFileState.bind(this);
 
     this.handleNodeClick = this.handleNodeClick.bind(this);
     this.handleNodeCollapse = this.handleNodeCollapse.bind(this);
@@ -35,61 +33,16 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
 
     this.contextMenuOnEdit = this.contextMenuOnEdit.bind(this);
     this.contextMenuOnDelete = this.contextMenuOnDelete.bind(this);
-
-    ImagesModel.instance.observe(this.updateFileState);
-    TagsModel.instance.observe(this.updateFileState);
-
-    this.state = {
-      tags: this.props.tags,
-      files: this.props.byTag ? this.getFilesByTag() : this.getFilteredFiles(this.props.tags)
-    };
-  }
-
-  updateFileState() {
-    this.setState({
-      files: this.props.byTag ? this.getFilesByTag() : this.getFilteredFiles(this.state.tags)
-    });
-  }
-
-  transformToFiles(images: Image[]): ITreeNodeFile[] {
-    return images.map(image => {
-      return {
-        id: `file_${image.path}`,
-        label: path.basename(image.path),
-        type: 'file',
-        image: image
-      } as ITreeNodeFile;
-    });
-  }
-
-  getFilteredFiles(search: Tag[] = []): ITreeNodeFile[] {
-    return this.transformToFiles(ImagesModel.instance.getImages(search));
-  }
-
-  getFilesByTag(): ITreeNodeFile[] {
-    const files: ITreeNodeFile[] = [];
-    const tags = TagsModel.instance.getTags();
-    for (const tag of tags) {
-      const tagFiles = this.transformToFiles(ImagesModel.instance.getImages([tag]));
-      files.push({
-        id: `folder_${tag.name}`,
-        label: tag.name,
-        type: 'folder',
-        tag: tag,
-        childNodes: tagFiles
-      });
-    }
-    return files;
   }
 
   handleNodeClick = (nodeData: ITreeNode) => {
     if ((nodeData.id as string).startsWith('file')) {
       const originallySelected = nodeData.isSelected;
-      this.forEachNode(this.state.files, n => (n.isSelected = false));
+      this.forEachNode(this.props.files, n => (n.isSelected = false));
       nodeData.isSelected = originallySelected == null ? true : !originallySelected;
 
       this.setState(this.state);
-      this.props.onSelect((nodeData as ITreeNodeFile).image);
+      this.props.onSelect((nodeData as ITreeNodeFile).image!);
     } else {
       nodeData.isExpanded = !nodeData.isExpanded;
       this.setState(this.state);
@@ -118,7 +71,7 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
   }
 
   private contextMenuOnDelete(node: ITreeNodeFile) {
-    if (node.isSelected) { this.props.onSelect(undefined); }
+    if (node.isSelected) { this.props.onSelect(null); }
     switch (node.type) {
       case 'file':
         ImagesModel.instance.removeImage(node.image!);
@@ -129,18 +82,10 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
     }
   }
 
-  componentWillReceiveProps(nextProps: FileTreeProps) {
-    if (this.state.tags !== nextProps.tags) {
-      this.setState({ tags: nextProps.tags }, () => {
-        this.updateFileState();
-      });
-    }
-  }
-
   render() {
     return (
       <Tree
-        contents={this.state.files}
+        contents={this.props.files}
         onNodeClick={this.handleNodeClick}
         onNodeCollapse={this.handleNodeCollapse}
         onNodeExpand={this.handleNodeExpand}
@@ -151,7 +96,7 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
               Menu,
               {}, // empty props
               <MenuItem onClick={() => this.contextMenuOnEdit(node as ITreeNodeFile)} text='Edit' />,
-              <MenuItem onClick={() => this.contextMenuOnDelete(node as ITreeNodeFile)} text='Delete' />
+              <MenuItem onClick={() => this.contextMenuOnDelete(node as ITreeNodeFile)} text='Delete' />,
           );
 
           ContextMenu.show(menu, { left: e.clientX, top: e.clientY }, () => {
@@ -163,11 +108,33 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
   }
 }
 
-const MapStateToProps = (_store: RootState) => ({});
+const MapStateToProps = (store: RootState, ownProps: OwnProps) => {
+  if (ownProps.byTag) {
+    return {
+      byTag: ownProps.byTag,
+      files: store.tag.files,
+    };
+  } else {
+    return {
+      byTag: ownProps.byTag,
+      files: store.search.files,
+    };
+  }
+};
 
-const MapDispatchToProps = (_dispatch: Dispatch<ActionTypes>) => ({});
+const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>, ownProps: OwnProps) => {
+  if (ownProps.byTag) {
+    return {
+      onSelect: (path: Image | null) => dispatch(selectFile('tag', path)),
+    };
+  } else {
+    return {
+      onSelect: (path: Image | null) => dispatch(selectFile('search', path)),
+    };
+  }
+};
 
 export default connect(
   MapStateToProps,
-  MapDispatchToProps
+  MapDispatchToProps,
 )(FileTree);

@@ -1,18 +1,43 @@
 import { createStore, compose } from 'redux';
 import rootReducer from '../reducers/root';
 
+import { ITreeNodeFile } from '../components/fileTree';
+import { Tag } from '../data/tag';
 import { Image } from '../data/image';
+import { FileTreeHelper } from '../helpers/fileTreeHelper';
+
+import { ImagesModel } from '../models/imagesModel';
+import { TagsModel } from '../models/tagsModel';
+
+ImagesModel.instance.initalize();
+TagsModel.instance.initalize();
 
 export interface RootState {
-  files: string[];
-  selectedFile: Image | null;
+  allTags: Tag[];
+  search: {
+    files: ITreeNodeFile[];
+    selectedTags: Tag[];
+    selectedFile: Image | null;
+  };
+  tag: {
+    files: ITreeNodeFile[];
+    selectedFile: Image | null;
+  };
   droppedFile: string | null;
 }
 
 export const initialState: RootState = {
-  files: [],
-  selectedFile: null,
-  droppedFile: null
+  allTags: TagsModel.instance.getTags(),
+  search: {
+    files: FileTreeHelper.getFilteredFiles(),
+    selectedTags: [],
+    selectedFile: null,
+  },
+  tag: {
+    files: FileTreeHelper.getFilesByTag(),
+    selectedFile: null,
+  },
+  droppedFile: null,
 };
 
 declare global {

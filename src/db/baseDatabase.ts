@@ -10,7 +10,7 @@ export abstract class BaseDatabase<T> {
   connect() {
     this.realm = new Realm({
       path: 'data/data.realm',
-      schema: this.schemas
+      schema: this.schemas,
     });
     this.realm.addListener('change', () => {
       for (const callback of this.onUpdateCallbacks) {

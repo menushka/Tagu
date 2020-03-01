@@ -6,7 +6,7 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { ActionTypes } from '../store/types';
 import { RootState } from '../store/store';
-import { addFile } from '../actions/actions';
+import { onDropFile } from '../actions/actions';
 
 import { NonIdealState } from '@blueprintjs/core';
 
@@ -14,16 +14,15 @@ import { Image } from '../data/image';
 import { Tag } from '../data/tag';
 import { Media } from './Media';
 import NewFileDialog from './NewFileDialog';
-import { ImagesModel } from '../models/imagesModel';
 import { TagsModel } from '../models/tagsModel';
-import { LeftColumn } from './LeftColumn';
+import LeftColumn from './LeftColumn';
 
 type MainProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
 type MainState = {
   tags: Tag[],
   selectedTags: Tag[],
-  selectedImage: Image | undefined
+  selectedImage: Image | undefined,
 };
 
 class Main extends React.Component<MainProps, MainState> {
@@ -31,13 +30,10 @@ class Main extends React.Component<MainProps, MainState> {
   constructor(props: MainProps) {
     super(props);
 
-    ImagesModel.instance.initalize();
-    TagsModel.instance.initalize();
-
     this.state = {
       tags: TagsModel.instance.getTags(),
       selectedTags: [],
-      selectedImage: undefined
+      selectedImage: undefined,
     };
   }
 
@@ -49,9 +45,7 @@ class Main extends React.Component<MainProps, MainState> {
           <input {...getInputProps()} />
           <NewFileDialog />
           <SplitPane minSize={250} >
-            <LeftColumn
-              onTagsChange={tags => this.setState({ selectedTags: tags })}
-              onImageChange={image => this.setState({ selectedImage: image })} />
+            <LeftColumn />
             <div style={{height: '100vh'}}>
               { this.state.selectedImage ? (
                 <Media image={this.state.selectedImage} />
@@ -73,10 +67,10 @@ class Main extends React.Component<MainProps, MainState> {
 const MapStateToProps = (_store: RootState) => ({});
 
 const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({
-  onFileDrop: (acceptedFiles: File[]) => dispatch(addFile(acceptedFiles[0].path))
+  onFileDrop: (acceptedFiles: File[]) => dispatch(onDropFile(acceptedFiles[0].path)),
 });
 
 export default connect(
   MapStateToProps,
-  MapDispatchToProps
+  MapDispatchToProps,
 )(Main);

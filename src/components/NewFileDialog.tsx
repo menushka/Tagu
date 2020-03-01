@@ -10,8 +10,7 @@ import { TagSearch } from './tagSearch';
 
 import { TagsModel } from '../models/tagsModel';
 import { Tag } from '../data/tag';
-import { ImagesModel } from '../models/imagesModel';
-import { cancelAddFile } from '../actions/actions';
+import { cancelNewFile, saveNewFile } from '../actions/actions';
 
 type NewFileDialogProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
@@ -26,14 +25,8 @@ class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDialogSta
     this.state = { tags: TagsModel.instance.getTags(), selectedTags: [] };
   }
 
-  componentDidMount() {
-    this.setState({ tags: TagsModel.instance.getTags(), selectedTags: [] });
-  }
-
   onFinish() {
-    const tags = this.state.selectedTags.filter(x => x.name.length > 0);
-    ImagesModel.instance.addImage(this.props.droppedFile!, tags);
-    this.props.onAdd(tags);
+    this.props.onAdd(this.props.droppedFile!, this.state.selectedTags.filter(x => x.name.length > 0));
   }
 
   render() {
@@ -59,15 +52,15 @@ class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDialogSta
 }
 
 const MapStateToProps = (store: RootState) => ({
-  droppedFile: store.droppedFile
+  droppedFile: store.droppedFile,
 });
 
 const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({
-  onClose: () => dispatch(cancelAddFile()),
-  onAdd: (_tags: Tag[]) => console.log
+  onAdd: (path: string, tags: Tag[]) => dispatch(saveNewFile(path, tags)),
+  onClose: () => dispatch(cancelNewFile()),
 });
 
 export default connect(
   MapStateToProps,
-  MapDispatchToProps
+  MapDispatchToProps,
 )(NewFileDialog);

@@ -21,7 +21,7 @@ export class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
     this.state = {
       tags: this.props.tags,
       selectedTags: [],
-      newTags: []
+      newTags: [],
     };
   }
 
@@ -78,7 +78,7 @@ export class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
             this.onRemove(index);
           },
           placeholder: 'Search...',
-          leftIcon: 'search'
+          leftIcon: 'search',
         }}
         noResults={<MenuItem disabled={true} text='No more tags.' />}
         createNewItemFromQuery={this.props.create ? this.onCreate : undefined}
@@ -96,8 +96,8 @@ export class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
         }}
         popoverProps={{
           modifiers: {
-            arrow: { enabled: false}
-          }
+            arrow: { enabled: false},
+          },
         }}/>
     );
   }

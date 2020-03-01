@@ -10,7 +10,7 @@ export class Image {
       path: 'string',
       fileType: 'string',
       tags: 'Tag[]',
-    }
+    },
   };
 
   path: string;

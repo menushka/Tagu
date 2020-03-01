@@ -6,7 +6,7 @@ export class Tag {
     primaryKey: 'name',
     properties: {
       name: 'string',
-    }
+    },
   };
 
   name: string;
