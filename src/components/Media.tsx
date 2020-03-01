@@ -24,7 +24,7 @@ class Media extends React.Component<MediaProps, {}> {
 }
 
 const MapStateToProps = (store: RootState) => ({
-  image: store.search.selectedFile,
+  image: store.leftColumnId === 'search' ? store.search.selectedFile : store.tag.selectedFile,
 });
 
 const MapDispatchToProps = (_dispatch: Dispatch<ActionTypes>) => ({});

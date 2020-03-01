@@ -8,12 +8,14 @@ import { FileTreeHelper } from '../helpers/fileTreeHelper';
 
 import { ImagesModel } from '../models/imagesModel';
 import { TagsModel } from '../models/tagsModel';
+import { SearchOrTag } from './types';
 
 ImagesModel.instance.initalize();
 TagsModel.instance.initalize();
 
 export interface RootState {
   allTags: Tag[];
+  leftColumnId: SearchOrTag;
   search: {
     files: ITreeNodeFile[];
     selectedTags: Tag[];
@@ -28,6 +30,7 @@ export interface RootState {
 
 export const initialState: RootState = {
   allTags: TagsModel.instance.getTags(),
+  leftColumnId: 'search',
   search: {
     files: FileTreeHelper.getFilteredFiles(),
     selectedTags: [],

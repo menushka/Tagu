@@ -1,5 +1,22 @@
-import { ActionTypes, SearchOrTag, DROP_FILE, SAVE_NEW_FILE, CANCEL_ADD_FILE, REMOVE_FILE, SELECT_FILE, UPDATE_SEARCH_TAGS, TOGGLE_FOLDER } from '../store/types';
+import {
+  ActionTypes,
+  SearchOrTag,
+  DROP_FILE,
+  SAVE_NEW_FILE,
+  CANCEL_ADD_FILE,
+  DELETE_FILE,
+  SELECT_FILE,
+  UPDATE_SEARCH_TAGS,
+  SWITCH_COLUMN,
+} from '../store/types';
 import { Tag } from '../data/tag';
+
+//#region UI State handling
+export const switchColumn = (id: SearchOrTag): ActionTypes => ({
+  type: SWITCH_COLUMN,
+  id,
+});
+//#endregion
 
 //#region Adding new files
 export const onDropFile = (path: string): ActionTypes => ({
@@ -18,13 +35,6 @@ export const cancelNewFile = (): ActionTypes => ({
 });
 //#endregion
 
-//#region Editing existing files
-export const removeFile = (node: number[]): ActionTypes => ({
-  type: REMOVE_FILE,
-  node,
-});
-//#endregion
-
 //#region File tree management
 export const selectFile = (column: SearchOrTag, node: number[]): ActionTypes => ({
   type: SELECT_FILE,
@@ -32,10 +42,10 @@ export const selectFile = (column: SearchOrTag, node: number[]): ActionTypes => 
   node,
 });
 
-export const toggleFolder = (column: SearchOrTag, node: number[]): ActionTypes => ({
-  type: TOGGLE_FOLDER,
+export const deleteFile = (column: SearchOrTag, id: string): ActionTypes => ({
+  type: DELETE_FILE,
   column,
-  node,
+  id,
 });
 
 export const updateSearchTags = (searchTags: Tag[]): ActionTypes => ({

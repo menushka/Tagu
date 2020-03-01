@@ -1,5 +1,18 @@
 import { Tag } from '../data/tag';
 
+//#region UI State handling
+export type SearchOrTag = 'search' | 'tag';
+
+export const SWITCH_COLUMN = 'SWITCH_COLUMN';
+
+interface SwitchColumn {
+  type: typeof SWITCH_COLUMN;
+  id: SearchOrTag;
+}
+
+type UIStateActionTypes = SwitchColumn;
+//#endregion
+
 //#region Adding new files
 export const DROP_FILE = 'DROP_FILE';
 export const SAVE_NEW_FILE = 'SAVE_NEW_FILE';
@@ -23,23 +36,11 @@ interface CancelAddFile {
 type NewFilesActionTypes = DropFile | SaveNewFile | CancelAddFile;
 //#endregion
 
-//#region Editing existing files
-export const REMOVE_FILE = 'REMOVE_FILE';
-
-interface RemoveFile {
-  type: typeof REMOVE_FILE;
-  node: number[];
-}
-
-type EditFilesActionType = RemoveFile;
-//#endregion
-
 //#region File tree management
 export const SELECT_FILE = 'SELECT_FILE';
 export const TOGGLE_FOLDER = 'TOGGLE_FOLDER';
+export const DELETE_FILE = 'DELETE_FILE';
 export const UPDATE_SEARCH_TAGS = 'UPDATE_SEARCH_TAGS';
-
-export type SearchOrTag = 'search' | 'tag';
 
 interface SelectFile {
   type: typeof SELECT_FILE;
@@ -47,10 +48,10 @@ interface SelectFile {
   node: number[];
 }
 
-interface ToggleFolder {
-  type: typeof TOGGLE_FOLDER;
+interface DeleteFile {
+  type: typeof DELETE_FILE;
   column: SearchOrTag;
-  node: number[];
+  id: string;
 }
 
 interface UpdateSearchTags {
@@ -58,7 +59,7 @@ interface UpdateSearchTags {
   searchTags: Tag[];
 }
 
-type FileTreeActionTypes = SelectFile | ToggleFolder | UpdateSearchTags;
+type FileTreeActionTypes = SelectFile | DeleteFile | UpdateSearchTags;
 //#endregion
 
-export type ActionTypes = NewFilesActionTypes | EditFilesActionType | FileTreeActionTypes;
+export type ActionTypes = UIStateActionTypes | NewFilesActionTypes | FileTreeActionTypes;

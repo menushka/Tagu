@@ -3,31 +3,23 @@ import { Tabs, Tab, Button } from '@blueprintjs/core';
 
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { ActionTypes } from '../store/types';
+import { ActionTypes, SearchOrTag } from '../store/types';
 import { RootState } from '../store/store';
 
-import { TagSearch } from './tagSearch';
+import { TagSearch } from './TagSearch';
 import FileTree from './FileTree';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
-import { TagsModel } from '../models/tagsModel';
+import { switchColumn } from '../actions/actions';
 
 type LeftColumnProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
-type LeftColumnState = {};
-
-class LeftColumn extends React.Component<LeftColumnProps, LeftColumnState> {
+class LeftColumn extends React.Component<LeftColumnProps, {}> {
   constructor(props: LeftColumnProps) {
     super(props);
 
     this.onSelectedTagsChange = this.onSelectedTagsChange.bind(this);
     this.onSelectedImageChange = this.onSelectedImageChange.bind(this);
-
-    this.state = {
-      tags: TagsModel.instance.getTags(),
-      selectedTags: [],
-      selectedImage: undefined,
-    };
   }
 
   onSelectedTagsChange(tags: Tag[]) {
@@ -47,7 +39,7 @@ class LeftColumn extends React.Component<LeftColumnProps, LeftColumnState> {
   render() {
     return (
       <div style={{height: '100vh'}}>
-        <Tabs id='columnTabs' className='flex-column full-height'>
+        <Tabs id='columnTabs' className='flex-column full-height' defaultSelectedTabId={this.props.columnId} onChange={this.props.onTabChange}>
           <Tab id='search' title='Search' panelClassName='flex-grow flex-column' panel={
             <div className='flex-column flex-grow'>
               <TagSearch
@@ -59,7 +51,7 @@ class LeftColumn extends React.Component<LeftColumnProps, LeftColumnState> {
               <Button text='Export' icon='export' fill={true} onClick={this.onExport}/>
             </div>
           } />
-          <Tab id='folders' title='By Tag' panelClassName='flex-grow flex-column' panel={
+          <Tab id='tag' title='By Tag' panelClassName='flex-grow flex-column' panel={
             <div className='flex-column flex-grow'>
               <div className='flex-grow'>
                 <FileTree byTag/>
@@ -74,11 +66,14 @@ class LeftColumn extends React.Component<LeftColumnProps, LeftColumnState> {
 }
 
 const MapStateToProps = (store: RootState) => ({
+  columnId: store.leftColumnId,
   allTags: store.allTags,
   searchTags: store.search.selectedTags,
 });
 
-const MapDispatchToProps = (_dispatch: Dispatch<ActionTypes>) => ({});
+const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({
+  onTabChange: (id: SearchOrTag) => dispatch(switchColumn(id)),
+});
 
 export default connect(
   MapStateToProps,

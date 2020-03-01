@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { ActionTypes } from '../store/types';
 import { RootState } from '../store/store';
 
-import { TagSearch } from './tagSearch';
+import { TagSearch } from './TagSearch';
 
 import { TagsModel } from '../models/tagsModel';
 import { Tag } from '../data/tag';

@@ -1,4 +1,4 @@
-import { ActionTypes, DROP_FILE, SAVE_NEW_FILE, CANCEL_ADD_FILE, REMOVE_FILE, SELECT_FILE, TOGGLE_FOLDER } from '../store/types';
+import { ActionTypes, DROP_FILE, SAVE_NEW_FILE, CANCEL_ADD_FILE, SELECT_FILE, SWITCH_COLUMN, DELETE_FILE } from '../store/types';
 import { initialState, RootState } from '../store/store';
 import { ImagesModel } from '../models/imagesModel';
 import { FileTreeHelper } from '../helpers/fileTreeHelper';
@@ -15,8 +15,8 @@ export default function rootReducer(
       return { ...state, droppedFile: null };
     case CANCEL_ADD_FILE:
       return { ...state, droppedFile: null };
-    case REMOVE_FILE:
-      return state;
+    case SWITCH_COLUMN:
+      return { ...state, leftColumnId: action.id };
     case SELECT_FILE:
       let files;
       let selectedFile;
@@ -24,16 +24,16 @@ export default function rootReducer(
         case 'search':
           files = state.search.files.map((arr) => { return {...arr}; });
           selectedFile = FileTreeHelper.selectAtPath(files, action.node);
+          selectedFile = selectedFile ? selectedFile : state.search.selectedFile; // Fallback if not file
           return { ...state, search: { ...state.search, files, selectedFile } };
         case 'tag':
           files = state.tag.files.map((arr) => { return {...arr}; });
           selectedFile = FileTreeHelper.selectAtPath(files, action.node);
+          selectedFile = selectedFile ? selectedFile : state.tag.selectedFile; // Fallback if not file
           return { ...state, tag: { ...state.tag, files, selectedFile } };
       }
-    case TOGGLE_FOLDER:
-      files = state.tag.files.map((arr) => { return {...arr}; });
-      FileTreeHelper.toggleFolderAtPath(files, action.node);
-      return { ...state, tag: { ...state.tag, files } };
+    case DELETE_FILE:
+      return state;
     default:
       return state;
   }
