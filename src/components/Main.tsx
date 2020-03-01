@@ -8,35 +8,13 @@ import { ActionTypes } from '../store/types';
 import { RootState } from '../store/store';
 import { onDropFile } from '../actions/actions';
 
-import { NonIdealState } from '@blueprintjs/core';
-
-import { Image } from '../data/image';
-import { Tag } from '../data/tag';
-import { Media } from './Media';
+import Media from './Media';
 import NewFileDialog from './NewFileDialog';
-import { TagsModel } from '../models/tagsModel';
 import LeftColumn from './LeftColumn';
 
 type MainProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
-type MainState = {
-  tags: Tag[],
-  selectedTags: Tag[],
-  selectedImage: Image | undefined,
-};
-
-class Main extends React.Component<MainProps, MainState> {
-
-  constructor(props: MainProps) {
-    super(props);
-
-    this.state = {
-      tags: TagsModel.instance.getTags(),
-      selectedTags: [],
-      selectedImage: undefined,
-    };
-  }
-
+class Main extends React.Component<MainProps, {}> {
   render() {
     return (
       <Dropzone onDrop={this.props.onFileDrop} noClick noKeyboard multiple={false}>
@@ -47,14 +25,7 @@ class Main extends React.Component<MainProps, MainState> {
           <SplitPane minSize={250} >
             <LeftColumn />
             <div style={{height: '100vh'}}>
-              { this.state.selectedImage ? (
-                <Media image={this.state.selectedImage} />
-              ) : (
-                <NonIdealState
-                  icon={'help'}
-                  title='Nothing selected'
-                  description={'No displayable item is selected in the left column.'} />
-              )}
+              <Media />
             </div>
           </SplitPane>
           </div>

@@ -1,5 +1,4 @@
 import { Tag } from '../data/tag';
-import { Image } from '../data/image';
 
 //#region Adding new files
 export const DROP_FILE = 'DROP_FILE';
@@ -29,7 +28,7 @@ export const REMOVE_FILE = 'REMOVE_FILE';
 
 interface RemoveFile {
   type: typeof REMOVE_FILE;
-  removeImage: Image;
+  node: number[];
 }
 
 type EditFilesActionType = RemoveFile;
@@ -37,12 +36,21 @@ type EditFilesActionType = RemoveFile;
 
 //#region File tree management
 export const SELECT_FILE = 'SELECT_FILE';
+export const TOGGLE_FOLDER = 'TOGGLE_FOLDER';
 export const UPDATE_SEARCH_TAGS = 'UPDATE_SEARCH_TAGS';
+
+export type SearchOrTag = 'search' | 'tag';
 
 interface SelectFile {
   type: typeof SELECT_FILE;
-  column: 'search' | 'tag';
-  file: Image | null;
+  column: SearchOrTag;
+  node: number[];
+}
+
+interface ToggleFolder {
+  type: typeof TOGGLE_FOLDER;
+  column: SearchOrTag;
+  node: number[];
 }
 
 interface UpdateSearchTags {
@@ -50,7 +58,7 @@ interface UpdateSearchTags {
   searchTags: Tag[];
 }
 
-type FileTreeActionTypes = SelectFile | UpdateSearchTags;
+type FileTreeActionTypes = SelectFile | ToggleFolder | UpdateSearchTags;
 //#endregion
 
 export type ActionTypes = NewFilesActionTypes | EditFilesActionType | FileTreeActionTypes;

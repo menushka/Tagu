@@ -1,7 +1,7 @@
 import { createStore, compose } from 'redux';
 import rootReducer from '../reducers/root';
 
-import { ITreeNodeFile } from '../components/fileTree';
+import { ITreeNodeFile } from '../components/FileTree';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
 import { FileTreeHelper } from '../helpers/fileTreeHelper';

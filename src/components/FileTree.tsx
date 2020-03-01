@@ -8,8 +8,6 @@ import { RootState } from '../store/store';
 
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
-import { ImagesModel } from '../models/imagesModel';
-import { TagsModel } from '../models/tagsModel';
 import { selectFile } from '../actions/actions';
 
 type OwnProps = { byTag?: boolean };
@@ -26,44 +24,8 @@ class FileTree extends React.Component<FileTreeProps, {}> {
   constructor(props: FileTreeProps) {
     super(props);
 
-    this.handleNodeClick = this.handleNodeClick.bind(this);
-    this.handleNodeCollapse = this.handleNodeCollapse.bind(this);
-    this.handleNodeExpand = this.handleNodeExpand.bind(this);
-    this.forEachNode = this.forEachNode.bind(this);
-
     this.contextMenuOnEdit = this.contextMenuOnEdit.bind(this);
     this.contextMenuOnDelete = this.contextMenuOnDelete.bind(this);
-  }
-
-  handleNodeClick = (nodeData: ITreeNode) => {
-    if ((nodeData.id as string).startsWith('file')) {
-      const originallySelected = nodeData.isSelected;
-      this.forEachNode(this.props.files, n => (n.isSelected = false));
-      nodeData.isSelected = originallySelected == null ? true : !originallySelected;
-
-      this.setState(this.state);
-      this.props.onSelect((nodeData as ITreeNodeFile).image!);
-    } else {
-      nodeData.isExpanded = !nodeData.isExpanded;
-      this.setState(this.state);
-    }
-  }
-
-  private handleNodeCollapse = (nodeData: ITreeNode) => {
-    nodeData.isExpanded = false;
-    this.setState(this.state);
-  }
-
-  private handleNodeExpand = (nodeData: ITreeNode) => {
-      nodeData.isExpanded = true;
-      this.setState(this.state);
-  }
-
-  private forEachNode(nodes: ITreeNode[], callback: (node: ITreeNode) => void) {
-    for (const node of nodes) {
-        callback(node);
-        this.forEachNode(node.childNodes ?? [], callback);
-    }
   }
 
   private contextMenuOnEdit(node: ITreeNode) {
@@ -71,24 +33,24 @@ class FileTree extends React.Component<FileTreeProps, {}> {
   }
 
   private contextMenuOnDelete(node: ITreeNodeFile) {
-    if (node.isSelected) { this.props.onSelect(null); }
-    switch (node.type) {
-      case 'file':
-        ImagesModel.instance.removeImage(node.image!);
-        break;
-      case 'folder':
-        TagsModel.instance.removeTag(node.tag!);
-        break;
-    }
+    // if (node.isSelected) { this.props.onSelect(null); }
+    // switch (node.type) {
+    //   case 'file':
+    //     ImagesModel.instance.removeImage(node.image!);
+    //     break;
+    //   case 'folder':
+    //     TagsModel.instance.removeTag(node.tag!);
+    //     break;
+    // }
   }
 
   render() {
     return (
       <Tree
         contents={this.props.files}
-        onNodeClick={this.handleNodeClick}
-        onNodeCollapse={this.handleNodeCollapse}
-        onNodeExpand={this.handleNodeExpand}
+        onNodeClick={this.props.onSelect}
+        onNodeCollapse={this.props.onCollapse}
+        onNodeExpand={this.props.onExpand}
         onNodeContextMenu={(node, _nodePath, e) => {
           e.preventDefault();
 
@@ -108,31 +70,15 @@ class FileTree extends React.Component<FileTreeProps, {}> {
   }
 }
 
-const MapStateToProps = (store: RootState, ownProps: OwnProps) => {
-  if (ownProps.byTag) {
-    return {
-      byTag: ownProps.byTag,
-      files: store.tag.files,
-    };
-  } else {
-    return {
-      byTag: ownProps.byTag,
-      files: store.search.files,
-    };
-  }
-};
+const MapStateToProps = (store: RootState, ownProps: OwnProps) => ({
+  files: ownProps.byTag ? store.tag.files : store.search.files,
+});
 
-const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>, ownProps: OwnProps) => {
-  if (ownProps.byTag) {
-    return {
-      onSelect: (path: Image | null) => dispatch(selectFile('tag', path)),
-    };
-  } else {
-    return {
-      onSelect: (path: Image | null) => dispatch(selectFile('search', path)),
-    };
-  }
-};
+const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>, ownProps: OwnProps) => ({
+  onSelect: (_nodeData: ITreeNode, nodePath: number[]) => dispatch(selectFile(ownProps.byTag ? 'tag' : 'search', nodePath)),
+  onExpand: (_nodeData: ITreeNode, nodePath: number[]) => dispatch(selectFile(ownProps.byTag ? 'tag' : 'search', nodePath)),
+  onCollapse: (_nodeData: ITreeNode, nodePath: number[]) => dispatch(selectFile(ownProps.byTag ? 'tag' : 'search', nodePath)),
+});
 
 export default connect(
   MapStateToProps,

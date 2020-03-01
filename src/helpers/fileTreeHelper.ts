@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Image } from '../data/image';
-import { ITreeNodeFile } from '../components/fileTree';
+import { ITreeNodeFile } from '../components/FileTree';
 import { Tag } from '../data/tag';
 import { TagsModel } from '../models/tagsModel';
 import { ImagesModel } from '../models/imagesModel';
@@ -26,6 +26,22 @@ export class FileTreeHelper {
     return files;
   }
 
+  static selectAtPath(nodes: ITreeNodeFile[], path: number[]): Image {
+    console.log(path);
+    const node = FileTreeHelper.forSpecificNode(nodes, path);
+    if (node.type === 'file') {
+      FileTreeHelper.forAllNode(nodes, x => x.isSelected = false);
+      node.isSelected = !node.isSelected;
+    } else {
+      node.isExpanded = !node.isExpanded;
+    }
+    return node.image!;
+  }
+
+  static toggleFolderAtPath(nodes: ITreeNodeFile[], path: number[]) {
+    FileTreeHelper.forSpecificNode(nodes, path, x => x.isExpanded = !x.isExpanded);
+  }
+
   private static transformToFiles(images: Image[]): ITreeNodeFile[] {
     return images.map(image => {
       return {
@@ -35,5 +51,23 @@ export class FileTreeHelper {
         image: image,
       } as ITreeNodeFile;
     });
+  }
+
+  private static forAllNode(nodes: ITreeNodeFile[], callback: (node: ITreeNodeFile) => void) {
+    for (const node of nodes) {
+        callback(node);
+        FileTreeHelper.forAllNode((node.childNodes ?? []) as ITreeNodeFile[], callback);
+    }
+  }
+
+  private static forSpecificNode(nodes: ITreeNodeFile[], path: number[], callback?: (node: ITreeNodeFile) => void): ITreeNodeFile {
+    if (path.length <= 1) {
+      if (callback) {
+        callback(nodes[path[0]]);
+      }
+      return nodes[path[0]];
+    } else {
+      return FileTreeHelper.forSpecificNode(nodes[path[0]].childNodes as ITreeNodeFile[], path.slice(1, path.length), callback);
+    }
   }
 }
