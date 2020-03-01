@@ -2,6 +2,11 @@ import * as React from 'react';
 import * as path from 'path';
 import { ITreeNode, Tree, ContextMenu, Menu, MenuItem } from '@blueprintjs/core';
 
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
+import { ActionTypes } from '../store/types';
+import { RootState } from '../store/store';
+
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
 import { ImagesModel } from '../models/imagesModel';
@@ -157,3 +162,12 @@ export class FileTree extends React.Component<FileTreeProps, FileTreeState> {
     );
   }
 }
+
+const MapStateToProps = (_store: RootState) => ({});
+
+const MapDispatchToProps = (_dispatch: Dispatch<ActionTypes>) => ({});
+
+export default connect(
+  MapStateToProps,
+  MapDispatchToProps
+)(FileTree);

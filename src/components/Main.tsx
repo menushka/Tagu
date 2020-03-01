@@ -2,26 +2,31 @@ import * as React from 'react';
 import Dropzone from 'react-dropzone';
 import SplitPane from 'react-split-pane';
 
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
+import { ActionTypes } from '../store/types';
+import { RootState } from '../store/store';
+import { addFile } from '../actions/actions';
+
 import { NonIdealState } from '@blueprintjs/core';
 
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
 import { Media } from './Media';
-import { NewFileDialog } from './NewFileDialog';
+import NewFileDialog from './NewFileDialog';
 import { ImagesModel } from '../models/imagesModel';
 import { TagsModel } from '../models/tagsModel';
 import { LeftColumn } from './LeftColumn';
 
-type MainProps = {};
+type MainProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
 type MainState = {
   tags: Tag[],
   selectedTags: Tag[],
-  selectedImage: Image | undefined,
-  fileDropped: string | null
+  selectedImage: Image | undefined
 };
 
-export class Main extends React.Component<MainProps, MainState> {
+class Main extends React.Component<MainProps, MainState> {
 
   constructor(props: MainProps) {
     super(props);
@@ -29,31 +34,20 @@ export class Main extends React.Component<MainProps, MainState> {
     ImagesModel.instance.initalize();
     TagsModel.instance.initalize();
 
-    this.onFileDrop = this.onFileDrop.bind(this);
-
     this.state = {
       tags: TagsModel.instance.getTags(),
       selectedTags: [],
-      selectedImage: undefined,
-      fileDropped: null
+      selectedImage: undefined
     };
-  }
-
-  onFileDrop(acceptedFiles: File[]) {
-    const file = acceptedFiles[0];
-    this.setState({ fileDropped: file.path });
   }
 
   render() {
     return (
-      <Dropzone onDrop={this.onFileDrop} noClick noKeyboard multiple={false}>
+      <Dropzone onDrop={this.props.onFileDrop} noClick noKeyboard multiple={false}>
         {({getRootProps, getInputProps}) => (
           <div {...getRootProps()}>
           <input {...getInputProps()} />
-          <NewFileDialog
-            newFilePath={this.state.fileDropped}
-            onClose={() => this.setState({ fileDropped: null })}
-            onFinish={() => this.setState({ fileDropped: null })} />
+          <NewFileDialog />
           <SplitPane minSize={250} >
             <LeftColumn
               onTagsChange={tags => this.setState({ selectedTags: tags })}
@@ -75,3 +69,14 @@ export class Main extends React.Component<MainProps, MainState> {
     );
   }
 }
+
+const MapStateToProps = (_store: RootState) => ({});
+
+const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({
+  onFileDrop: (acceptedFiles: File[]) => dispatch(addFile(acceptedFiles[0].path))
+});
+
+export default connect(
+  MapStateToProps,
+  MapDispatchToProps
+)(Main);

@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { app, BrowserWindow } from 'electron';
 import { enableLiveReload } from 'electron-compile';
 
@@ -30,6 +33,10 @@ const createWindow = async () => {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  if (process.env.REDUX_DEVTOOLS_PATH) {
+    BrowserWindow.addDevToolsExtension(process.env.REDUX_DEVTOOLS_PATH);
+  }
 };
 
 // This method will be called when Electron has finished
