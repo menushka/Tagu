@@ -8,7 +8,7 @@ import { RootState } from '../store/store';
 
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
-import { selectFile, deleteFile } from '../actions/actions';
+import { selectFile, deleteFile, deleteTag } from '../actions/actions';
 
 type OwnProps = { byTag?: boolean };
 
@@ -32,11 +32,19 @@ class FileTree extends React.Component<FileTreeProps, {}> {
         onNodeContextMenu={(node, _nodePath, e) => {
           e.preventDefault();
 
+          const treeNode = (node as ITreeNodeFile);
+
+          const onEdit = () => { console.log('Not yet implemented'); };
+
+          const deleteImage = () => { this.props.onDeleteImage(treeNode.image!); };
+          const deleteTag = () => { this.props.onDeleteTag(treeNode.tag!); };
+          const onDelete = treeNode.type === 'file' ? deleteImage : deleteTag;
+
           const menu = React.createElement(
               Menu,
               {}, // empty props
-              <MenuItem onClick={() => this.props.onDelete((node as ITreeNodeFile).id)} text='Edit' />,
-              <MenuItem onClick={() => this.props.onDelete((node as ITreeNodeFile).id)} text='Delete' />,
+              <MenuItem onClick={onEdit} text='Edit' />,
+              <MenuItem onClick={onDelete} text='Delete' />,
           );
 
           ContextMenu.show(menu, { left: e.clientX, top: e.clientY });
@@ -52,7 +60,8 @@ const MapStateToProps = (store: RootState, ownProps: OwnProps) => ({
 
 const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>, ownProps: OwnProps) => ({
   onSelect: (_nodeData: ITreeNode, nodePath: number[]) => dispatch(selectFile(ownProps.byTag ? 'tag' : 'search', nodePath)),
-  onDelete: (id: string) => dispatch(deleteFile(ownProps.byTag ? 'tag' : 'search', id)),
+  onDeleteImage: (image: Image) => dispatch(deleteFile(image)),
+  onDeleteTag: (tag: Tag) => dispatch(deleteTag(tag)),
 });
 
 export default connect(

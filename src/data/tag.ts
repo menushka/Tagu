@@ -14,4 +14,8 @@ export class Tag {
   constructor(name: string) {
     this.name = name;
   }
+
+  getPrimaryKey(): string {
+    return this.name;
+  }
 }

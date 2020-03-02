@@ -1,4 +1,5 @@
 import { Tag } from '../data/tag';
+import { Image } from '../data/image';
 
 //#region UI State handling
 export type SearchOrTag = 'search' | 'tag';
@@ -15,12 +16,18 @@ type UIStateActionTypes = SwitchColumn;
 
 //#region Adding new files
 export const DROP_FILE = 'DROP_FILE';
+export const UPDATE_ADD_TAGS = 'UPDATE_ADD_TAGS';
 export const SAVE_NEW_FILE = 'SAVE_NEW_FILE';
 export const CANCEL_ADD_FILE = 'CANCEL_ADD_FILE';
 
 interface DropFile {
   type: typeof DROP_FILE;
   path: string;
+}
+
+interface UpdateAddTags {
+  type: typeof UPDATE_ADD_TAGS;
+  addTags: Tag[];
 }
 
 interface SaveNewFile {
@@ -33,13 +40,14 @@ interface CancelAddFile {
   type: typeof CANCEL_ADD_FILE;
 }
 
-type NewFilesActionTypes = DropFile | SaveNewFile | CancelAddFile;
+type NewFilesActionTypes = DropFile | UpdateAddTags | SaveNewFile | CancelAddFile;
 //#endregion
 
 //#region File tree management
 export const SELECT_FILE = 'SELECT_FILE';
 export const TOGGLE_FOLDER = 'TOGGLE_FOLDER';
 export const DELETE_FILE = 'DELETE_FILE';
+export const DELETE_TAG = 'DELETE_TAG';
 export const UPDATE_SEARCH_TAGS = 'UPDATE_SEARCH_TAGS';
 
 interface SelectFile {
@@ -50,8 +58,12 @@ interface SelectFile {
 
 interface DeleteFile {
   type: typeof DELETE_FILE;
-  column: SearchOrTag;
-  id: string;
+  file: Image;
+}
+
+interface DeleteTag {
+  type: typeof DELETE_TAG;
+  tag: Tag;
 }
 
 interface UpdateSearchTags {
@@ -59,7 +71,7 @@ interface UpdateSearchTags {
   searchTags: Tag[];
 }
 
-type FileTreeActionTypes = SelectFile | DeleteFile | UpdateSearchTags;
+type FileTreeActionTypes = SelectFile | DeleteFile | DeleteTag | UpdateSearchTags;
 //#endregion
 
 export type ActionTypes = UIStateActionTypes | NewFilesActionTypes | FileTreeActionTypes;

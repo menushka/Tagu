@@ -8,8 +8,11 @@ import {
   SELECT_FILE,
   UPDATE_SEARCH_TAGS,
   SWITCH_COLUMN,
+  UPDATE_ADD_TAGS,
+  DELETE_TAG,
 } from '../store/types';
 import { Tag } from '../data/tag';
+import { Image } from '../data/image';
 
 //#region UI State handling
 export const switchColumn = (id: SearchOrTag): ActionTypes => ({
@@ -22,6 +25,11 @@ export const switchColumn = (id: SearchOrTag): ActionTypes => ({
 export const onDropFile = (path: string): ActionTypes => ({
   type: DROP_FILE,
   path,
+});
+
+export const updateAddTags = (addTags: Tag[]): ActionTypes => ({
+  type: UPDATE_ADD_TAGS,
+  addTags,
 });
 
 export const saveNewFile = (path: string, tags: Tag[]): ActionTypes => ({
@@ -42,10 +50,14 @@ export const selectFile = (column: SearchOrTag, node: number[]): ActionTypes => 
   node,
 });
 
-export const deleteFile = (column: SearchOrTag, id: string): ActionTypes => ({
+export const deleteFile = (file: Image): ActionTypes => ({
   type: DELETE_FILE,
-  column,
-  id,
+  file,
+});
+
+export const deleteTag = (tag: Tag): ActionTypes => ({
+  type: DELETE_TAG,
+  tag,
 });
 
 export const updateSearchTags = (searchTags: Tag[]): ActionTypes => ({

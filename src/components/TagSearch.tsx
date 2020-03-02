@@ -2,54 +2,38 @@ import * as React from 'react';
 import { MenuItem } from '@blueprintjs/core';
 import { MultiSelect } from '@blueprintjs/select';
 
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
+import { ActionTypes } from '../store/types';
+import { RootState } from '../store/store';
+
 import { Tag } from '../data/tag';
+import { updateSearchTags, updateAddTags } from '../actions/actions';
 
-type TagSearchProps = { tags: Tag[], onChange: (tags: Tag[]) => void, create?: boolean };
+type OwnProps = { create?: boolean };
 
-type TagSearchState = { tags: Tag[], selectedTags: Tag[], newTags: Tag[] };
+type TagSearchProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
 const TagMultiSelect = MultiSelect.ofType<Tag>();
 
-export class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
-
+class TagSearch extends React.Component<TagSearchProps, {}> {
   constructor(props: TagSearchProps) {
     super(props);
 
     this.onSelect = this.onSelect.bind(this);
     this.onRemove = this.onRemove.bind(this);
-
-    this.state = {
-      tags: this.props.tags,
-      selectedTags: [],
-      newTags: [],
-    };
   }
 
   onSelect(tag: Tag) {
-    const currentTags = this.state.selectedTags;
+    const currentTags = this.props.selectedTags.map(x => x);
     currentTags.push(tag);
-    this.setState({ selectedTags: currentTags });
-    this.props.onChange(this.state.selectedTags);
+    this.props.updateTags(currentTags);
   }
 
   onRemove(index: number) {
-    const currentTags = this.state.selectedTags;
-    const removedTag = currentTags[index];
+    const currentTags = this.props.selectedTags.map(x => x);
     currentTags.splice(index, 1);
-    this.setState({ selectedTags: currentTags });
-
-    const currentNewTags = this.state.newTags;
-    const newIndex = this.state.newTags.indexOf(removedTag);
-    if (newIndex != -1) {
-      currentNewTags.splice(newIndex, 1);
-      this.setState({ newTags: currentNewTags });
-    }
-
-    this.props.onChange(currentTags.concat(currentNewTags));
-  }
-
-  onCreate(query: string) {
-    return new Tag(query);
+    this.props.updateTags(currentTags);
   }
 
   render() {
@@ -57,9 +41,9 @@ export class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
       <TagMultiSelect
         fill={true}
         items={this.props.tags}
-        itemPredicate={(query, tag) => !this.state.selectedTags.includes(tag) && tag.name.includes(query)}
+        itemPredicate={(query, tag) => !this.props.selectedTags.some(x => x.name === tag.name) && tag.name.includes(query)}
         resetOnSelect={true}
-        selectedItems={this.state.selectedTags}
+        selectedItems={this.props.selectedTags}
         onItemSelect={this.onSelect}
         itemRenderer={(tag, { modifiers, handleClick }) => {
           return (
@@ -81,7 +65,7 @@ export class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
           leftIcon: 'search',
         }}
         noResults={<MenuItem disabled={true} text='No more tags.' />}
-        createNewItemFromQuery={this.props.create ? this.onCreate : undefined}
+        createNewItemFromQuery={this.props.create ? (query) => { return new Tag(query); } : undefined}
         createNewItemRenderer={(query, active, handleClick) => {
           return (
             <MenuItem
@@ -102,3 +86,18 @@ export class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
     );
   }
 }
+
+const MapStateToProps = (store: RootState, ownProps: OwnProps) => ({
+  create: ownProps.create,
+  tags: store.allTags,
+  selectedTags: ownProps.create ? store.new.selectedTags : store.search.selectedTags,
+});
+
+const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>, ownProps: OwnProps) => ({
+  updateTags: (tags: Tag[]) => dispatch(ownProps.create ? updateAddTags(tags) : updateSearchTags(tags)),
+});
+
+export default connect(
+  MapStateToProps,
+  MapDispatchToProps,
+)(TagSearch);

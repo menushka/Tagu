@@ -3,6 +3,7 @@ import * as Realm from 'realm';
 export abstract class BaseDatabase<T> {
   abstract name: string;
   abstract schemas: (Realm.ObjectSchema | Realm.ObjectClass)[];
+  abstract getPrimaryKey: (entry: T) => string;
 
   private realm: Realm;
   private onUpdateCallbacks: (() => void)[] = [];
@@ -38,16 +39,16 @@ export abstract class BaseDatabase<T> {
   deleteMultiple(entries: T[]) {
     this.realm.write(() => {
       for (const entry of entries) {
-        this.realm.delete(entry);
+        this.realm.delete(this.realm.objectForPrimaryKey(this.name, this.getPrimaryKey(entry)));
       }
     });
   }
 
   query(filter: string = '', realm: Realm = this.realm): T[] {
     if (filter != '') {
-      return realm.objects<T>(this.name).filtered(filter).map(x => x);
+      return realm.objects<T>(this.name).filtered(filter).map(x => JSON.parse(JSON.stringify(x)));
     } else {
-      return realm.objects<T>(this.name).map(x => x);
+      return realm.objects<T>(this.name).map(x => JSON.parse(JSON.stringify(x)));
     }
   }
 

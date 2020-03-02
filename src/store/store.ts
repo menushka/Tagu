@@ -25,7 +25,10 @@ export interface RootState {
     files: ITreeNodeFile[];
     selectedFile: Image | null;
   };
-  droppedFile: string | null;
+  new: {
+    droppedFile: string | null;
+    selectedTags: Tag[];
+  };
 }
 
 export const initialState: RootState = {
@@ -40,7 +43,10 @@ export const initialState: RootState = {
     files: FileTreeHelper.getFilesByTag(),
     selectedFile: null,
   },
-  droppedFile: null,
+  new: {
+    droppedFile: null,
+    selectedTags: [],
+  },
 };
 
 declare global {

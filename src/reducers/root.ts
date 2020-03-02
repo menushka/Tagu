@@ -1,7 +1,19 @@
-import { ActionTypes, DROP_FILE, SAVE_NEW_FILE, CANCEL_ADD_FILE, SELECT_FILE, SWITCH_COLUMN, DELETE_FILE } from '../store/types';
+import {
+  ActionTypes,
+  DROP_FILE,
+  SAVE_NEW_FILE,
+  CANCEL_ADD_FILE,
+  SELECT_FILE,
+  SWITCH_COLUMN,
+  DELETE_FILE,
+  UPDATE_ADD_TAGS,
+  UPDATE_SEARCH_TAGS,
+  DELETE_TAG,
+} from '../store/types';
 import { initialState, RootState } from '../store/store';
 import { ImagesModel } from '../models/imagesModel';
 import { FileTreeHelper } from '../helpers/fileTreeHelper';
+import { TagsModel } from '../models/tagsModel';
 
 export default function rootReducer(
   state = initialState,
@@ -9,12 +21,19 @@ export default function rootReducer(
 ): RootState {
   switch (action.type) {
     case DROP_FILE:
-      return { ...state, droppedFile: action.path };
+      return { ...state, new: { ...state.new, droppedFile: action.path } };
+    case UPDATE_ADD_TAGS:
+      return { ...state, new: { ...state.new, selectedTags: action.addTags } };
     case SAVE_NEW_FILE:
       ImagesModel.instance.addImage(action.path, action.tags);
-      return { ...state, droppedFile: null };
+      return { ...state,
+        allTags: TagsModel.instance.getTags(),
+        search: { ...state.search, files: FileTreeHelper.getFilteredFiles(state.search.selectedTags) },
+        tag: { ...state.tag, files: FileTreeHelper.getFilesByTag() },
+        new: { ...state.new, droppedFile: null },
+      };
     case CANCEL_ADD_FILE:
-      return { ...state, droppedFile: null };
+      return { ...state, new: { ...state.new, droppedFile: null } };
     case SWITCH_COLUMN:
       return { ...state, leftColumnId: action.id };
     case SELECT_FILE:
@@ -33,7 +52,26 @@ export default function rootReducer(
           return { ...state, tag: { ...state.tag, files, selectedFile } };
       }
     case DELETE_FILE:
-      return state;
+      ImagesModel.instance.removeImage(action.file);
+      return { ...state,
+        allTags: TagsModel.instance.getTags(),
+        search: { ...state.search, files: FileTreeHelper.getFilteredFiles(state.search.selectedTags) },
+        tag: { ...state.tag, files: FileTreeHelper.getFilesByTag() },
+        new: { ...state.new, droppedFile: null },
+      };
+    case DELETE_TAG:
+      TagsModel.instance.removeTag(action.tag);
+      return { ...state,
+        allTags: TagsModel.instance.getTags(),
+        search: { ...state.search, files: FileTreeHelper.getFilteredFiles(state.search.selectedTags) },
+        tag: { ...state.tag, files: FileTreeHelper.getFilesByTag() },
+        new: { ...state.new, droppedFile: null },
+      };
+    case UPDATE_SEARCH_TAGS:
+      return { ...state, search: { ...state.search,
+        selectedTags: action.searchTags,
+        files: FileTreeHelper.getFilteredFiles(action.searchTags),
+      } };
     default:
       return state;
   }

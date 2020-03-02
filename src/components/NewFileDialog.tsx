@@ -6,29 +6,14 @@ import { connect } from 'react-redux';
 import { ActionTypes } from '../store/types';
 import { RootState } from '../store/store';
 
-import { TagSearch } from './TagSearch';
+import TagSearch from './TagSearch';
 
-import { TagsModel } from '../models/tagsModel';
 import { Tag } from '../data/tag';
 import { cancelNewFile, saveNewFile } from '../actions/actions';
 
-type NewFileDialogProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
+type NewFileDialogProps = ReturnType<typeof MergeProps>;
 
-type NewFileDialogState = { tags: Tag[], selectedTags: Tag[] };
-
-class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDialogState> {
-  constructor(props: NewFileDialogProps) {
-    super(props);
-
-    this.onFinish = this.onFinish.bind(this);
-
-    this.state = { tags: TagsModel.instance.getTags(), selectedTags: [] };
-  }
-
-  onFinish() {
-    this.props.onAdd(this.props.droppedFile!, this.state.selectedTags.filter(x => x.name.length > 0));
-  }
-
+class NewFileDialog extends React.Component<NewFileDialogProps, {}> {
   render() {
     return (
       <Dialog
@@ -40,11 +25,8 @@ class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDialogSta
           <img src={this.props.droppedFile!} style={{height: '30vh', width: '100%', objectFit: 'contain'}} />
         </div>
         <div className={Classes.DIALOG_FOOTER}>
-          <TagSearch
-            tags={this.state.tags}
-            onChange={(tags) => this.setState({ selectedTags: tags })}
-            create={true}/>
-          <Button text='Add File' onClick={this.onFinish} icon='add' fill={true} style={{ marginTop: '10px' }}/>
+          <TagSearch create={true}/>
+          <Button text='Add File' onClick={this.props.onAdd} icon='add' fill={true} style={{ marginTop: '10px' }}/>
         </div>
       </Dialog>
     );
@@ -52,7 +34,9 @@ class NewFileDialog extends React.Component<NewFileDialogProps, NewFileDialogSta
 }
 
 const MapStateToProps = (store: RootState) => ({
-  droppedFile: store.droppedFile,
+  tags: store.allTags,
+  droppedFile: store.new.droppedFile,
+  selectedTags: store.new.selectedTags,
 });
 
 const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({
@@ -60,7 +44,14 @@ const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({
   onClose: () => dispatch(cancelNewFile()),
 });
 
+const MergeProps = (stateProps: ReturnType<typeof MapStateToProps>, dispatchProps: ReturnType<typeof MapDispatchToProps>) => {
+  return Object.assign({}, stateProps, dispatchProps, {
+    onAdd: () => dispatchProps.onAdd(stateProps.droppedFile!, stateProps.selectedTags),
+  });
+};
+
 export default connect(
   MapStateToProps,
   MapDispatchToProps,
+  MergeProps,
 )(NewFileDialog);

@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { ActionTypes, SearchOrTag } from '../store/types';
 import { RootState } from '../store/store';
 
-import { TagSearch } from './TagSearch';
+import TagSearch from './TagSearch';
 import FileTree from './FileTree';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
@@ -42,9 +42,7 @@ class LeftColumn extends React.Component<LeftColumnProps, {}> {
         <Tabs id='columnTabs' className='flex-column full-height' defaultSelectedTabId={this.props.columnId} onChange={this.props.onTabChange}>
           <Tab id='search' title='Search' panelClassName='flex-grow flex-column' panel={
             <div className='flex-column flex-grow'>
-              <TagSearch
-                tags={this.props.searchTags}
-                onChange={this.onSelectedTagsChange}/>
+              <TagSearch />
               <div className='flex-grow'>
                 <FileTree />
               </div>

@@ -27,7 +27,6 @@ export class FileTreeHelper {
   }
 
   static selectAtPath(nodes: ITreeNodeFile[], path: number[]): Image {
-    console.log(path);
     const node = FileTreeHelper.forSpecificNode(nodes, path);
     if (node.type === 'file') {
       FileTreeHelper.forAllNode(nodes, x => x.isSelected = false);
