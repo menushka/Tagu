@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Tabs, Tab, Button } from '@blueprintjs/core';
 
+import { remote } from 'electron';
+
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { ActionTypes, SearchOrTag } from '../store/types';
@@ -11,6 +13,7 @@ import FileTree from './FileTree';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
 import { switchColumn } from '../actions/actions';
+import { FileTreeHelper } from '../helpers/fileTreeHelper';
 
 type LeftColumnProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
@@ -33,7 +36,14 @@ class LeftColumn extends React.Component<LeftColumnProps, {}> {
   }
 
   onExport() {
-    console.log('Export');
+    remote.dialog.showSaveDialog({
+      title: 'Choose export directory...',
+      properties: ['createDirectory', 'showOverwriteConfirmation'],
+    }).then((response: Electron.SaveDialogReturnValue) => {
+      if (response.canceled) { return; }
+
+        FileTreeHelper.exportTreeToPath(this.props.currentFileTree, response.filePath!);
+    });
   }
 
   render() {
@@ -67,6 +77,7 @@ const MapStateToProps = (store: RootState) => ({
   columnId: store.leftColumnId,
   allTags: store.allTags,
   searchTags: store.search.selectedTags,
+  currentFileTree: store.leftColumnId === 'search' ? store.search.files : store.tag.files,
 });
 
 const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({

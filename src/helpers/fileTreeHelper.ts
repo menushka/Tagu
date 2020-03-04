@@ -1,3 +1,4 @@
+import * as fs from 'fs-extra';
 import * as path from 'path';
 import { Image } from '../data/image';
 import { ITreeNodeFile } from '../components/FileTree';
@@ -39,6 +40,10 @@ export class FileTreeHelper {
 
   static toggleFolderAtPath(nodes: ITreeNodeFile[], path: number[]) {
     FileTreeHelper.forSpecificNode(nodes, path, x => x.isExpanded = !x.isExpanded);
+  }
+
+  static exportTreeToPath(nodes: ITreeNodeFile[], path: string) {
+    console.log(nodes, path);
   }
 
   private static transformToFiles(images: Image[]): ITreeNodeFile[] {

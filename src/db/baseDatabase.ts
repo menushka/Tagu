@@ -20,31 +20,47 @@ export abstract class BaseDatabase<T> {
     });
   }
 
-  write(entry: T) {
-    this.writeMultiple([entry]);
+  async write(entry: T): Promise<T> {
+    const value = await this.writeMultiple([entry]);
+    return value[0];
   }
 
-  writeMultiple(entries: T[]) {
-    this.realm.write(() => {
-      for (const entry of entries) {
-        this.realm.create(this.name, entry, true);
+  async writeMultiple(entries: T[]): Promise<T[]> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.realm.write(() => {
+          let values = [];
+          for (const entry of entries) {
+            values.push(this.realm.create(this.name, entry, true));
+          }
+          return resolve(values);
+        });
+      } catch {
+        reject();
       }
     });
   }
 
-  delete(entry: T) {
-    this.deleteMultiple([entry]);
+  async delete(entry: T): Promise<void> {
+    await this.deleteMultiple([entry]);
   }
 
-  deleteMultiple(entries: T[]) {
-    this.realm.write(() => {
-      for (const entry of entries) {
-        this.realm.delete(this.realm.objectForPrimaryKey(this.name, this.getPrimaryKey(entry)));
+  async deleteMultiple(entries: T[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.realm.write(() => {
+          for (const entry of entries) {
+            this.realm.delete(this.realm.objectForPrimaryKey(this.name, this.getPrimaryKey(entry)));
+          }
+          resolve();
+        });
+      } catch {
+        reject();
       }
     });
   }
 
-  query(filter: string = '', realm: Realm = this.realm): T[] {
+  async query(filter: string = '', realm: Realm = this.realm): Promise<T[]> {
     if (filter != '') {
       return realm.objects<T>(this.name).filtered(filter).map(x => JSON.parse(JSON.stringify(x)));
     } else {
