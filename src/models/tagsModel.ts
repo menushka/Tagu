@@ -1,4 +1,4 @@
-import { TagsDatabase } from '../db/tagsDatabase';
+import { Database } from '../db/database';
 
 import { Tag } from '../data/tag';
 
@@ -13,25 +13,14 @@ export class TagsModel {
     return TagsModel._instance;
   }
 
-  private db: TagsDatabase;
-
-  private constructor() {
-    this.db = new TagsDatabase();
-  }
-
-  initalize() {
-    this.db.connect();
-  }
+  private constructor() {}
 
   getTags(): Tag[] {
-    return this.db.query();
-  }
-
-  observe(onUpdate: () => void) {
-    this.db.observe(onUpdate);
+    console.log('start Tag get');
+    return ([] as Tag[]).concat(Database.instance.tags.query());
   }
 
   removeTag(tag: Tag) {
-    this.db.delete(tag);
+    Database.instance.tags.delete(tag);
   }
 }

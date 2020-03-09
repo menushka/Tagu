@@ -25,7 +25,7 @@ export default function rootReducer(
     case UPDATE_ADD_TAGS:
       return { ...state, new: { ...state.new, selectedTags: action.addTags } };
     case SAVE_NEW_FILE:
-      ImagesModel.instance.addImage(action.path, action.tags);
+      console.log(TagsModel.instance.getTags());
       return { ...state,
         allTags: TagsModel.instance.getTags(),
         search: { ...state.search, files: FileTreeHelper.getFilteredFiles(state.search.selectedTags) },

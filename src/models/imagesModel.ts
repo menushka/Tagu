@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { ImagesDatabase } from '../db/imagesDatabase';
+import { Database } from '../db/database';
 
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
@@ -15,27 +15,15 @@ export class ImagesModel {
     return ImagesModel._instance;
   }
 
-  private db: ImagesDatabase;
-
-  private constructor() {
-    this.db = new ImagesDatabase();
-  }
-
-  initalize() {
-    this.db.connect();
-  }
+  private constructor() {}
 
   getImages(search: Tag[] = []): Image[] {
     if (search.length === 0) {
-      return this.db.query();
+      return ([] as Image[]).concat(Database.instance.images.query());
     } else {
       const filter = search.map(x => `ANY tags.name ==[c] '${x.name}'`).join(' AND ');
-      return this.db.query(filter);
+      return ([] as Image[]).concat(Database.instance.images.query(filter));
     }
-  }
-
-  observe(onUpdate: () => void) {
-    this.db.observe(onUpdate);
   }
 
   addImage(addImagePath: string, tags: Tag[]) {
@@ -43,12 +31,14 @@ export class ImagesModel {
     const newFilePath = path.join(__dirname, '../../', 'images', fileName);
     fs.ensureDirSync(path.join(__dirname, '../../', 'images'));
     fs.copySync(addImagePath, newFilePath);
-    this.db.write(new Image(fileName, tags));
+    console.log('start Image write');
+    Database.instance.images.write(new Image(fileName, tags));
+    console.log('end Image write');
   }
 
   removeImage(image: Image) {
     const imagePath = Image.getAbsolutePath(image);
-    this.db.delete(image);
+    Database.instance.images.delete(image);
     fs.removeSync(imagePath);
   }
 }

@@ -13,6 +13,7 @@ import {
 } from '../store/types';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
+import { ImagesModel } from '../models/imagesModel';
 
 //#region UI State handling
 export const switchColumn = (id: SearchOrTag): ActionTypes => ({
@@ -32,11 +33,14 @@ export const updateAddTags = (addTags: Tag[]): ActionTypes => ({
   addTags,
 });
 
-export const saveNewFile = (path: string, tags: Tag[]): ActionTypes => ({
-  type: SAVE_NEW_FILE,
-  path,
-  tags,
-});
+export const saveNewFile = (path: string, tags: Tag[]): ActionTypes => {
+  ImagesModel.instance.addImage(path, tags);
+  return {
+    type: SAVE_NEW_FILE,
+    path,
+    tags,
+  };
+};
 
 export const cancelNewFile = (): ActionTypes => ({
   type: CANCEL_ADD_FILE,

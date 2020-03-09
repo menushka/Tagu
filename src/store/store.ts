@@ -6,12 +6,8 @@ import { Tag } from '../data/tag';
 import { Image } from '../data/image';
 import { FileTreeHelper } from '../helpers/fileTreeHelper';
 
-import { ImagesModel } from '../models/imagesModel';
 import { TagsModel } from '../models/tagsModel';
 import { SearchOrTag } from './types';
-
-ImagesModel.instance.initalize();
-TagsModel.instance.initalize();
 
 export interface RootState {
   allTags: Tag[];
