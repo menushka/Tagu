@@ -5,13 +5,23 @@ import { Image } from '../data/image';
 export type SearchOrTag = 'search' | 'tag';
 
 export const SWITCH_COLUMN = 'SWITCH_COLUMN';
+export const OPEN_PREFERENCES = 'OPEN_PREFERENCES';
+export const CLOSE_PREFERENCES = 'CLOSE_PREFERENCES';
 
 interface SwitchColumn {
   type: typeof SWITCH_COLUMN;
   id: SearchOrTag;
 }
 
-type UIStateActionTypes = SwitchColumn;
+interface OpenPreferences {
+  type: typeof OPEN_PREFERENCES;
+}
+
+interface ClosePreferences {
+  type: typeof CLOSE_PREFERENCES;
+}
+
+type UIStateActionTypes = SwitchColumn | OpenPreferences | ClosePreferences;
 //#endregion
 
 //#region Adding new files

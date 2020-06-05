@@ -9,6 +9,8 @@ import {
   UPDATE_ADD_TAGS,
   UPDATE_SEARCH_TAGS,
   DELETE_TAG,
+  OPEN_PREFERENCES,
+  CLOSE_PREFERENCES,
 } from '../store/types';
 import { initialState, RootState } from '../store/store';
 import { ImagesModel } from '../models/imagesModel';
@@ -36,6 +38,10 @@ export default function rootReducer(
       return { ...state, new: { ...state.new, droppedFile: null } };
     case SWITCH_COLUMN:
       return { ...state, leftColumnId: action.id };
+    case OPEN_PREFERENCES:
+      return { ...state, preferences: { ...state.preferences, open: true } };
+    case CLOSE_PREFERENCES:
+      return { ...state, preferences: { ...state.preferences, open: false } };
     case SELECT_FILE:
       let files;
       let selectedFile;

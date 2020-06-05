@@ -1,8 +1,10 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, Menu } from 'electron';
 import { enableLiveReload } from 'electron-compile';
+
+import { template } from './menu';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -33,6 +35,9 @@ const createWindow = async () => {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+
+  const menu = Menu.buildFromTemplate(template(mainWindow));
+  Menu.setApplicationMenu(menu);
 
   if (process.env.REDUX_DEVTOOLS_PATH) {
     BrowserWindow.addDevToolsExtension(process.env.REDUX_DEVTOOLS_PATH);

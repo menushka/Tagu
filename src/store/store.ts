@@ -8,10 +8,14 @@ import { FileTreeHelper } from '../helpers/fileTreeHelper';
 
 import { TagsModel } from '../models/tagsModel';
 import { SearchOrTag } from './types';
+import { listener } from './electronListener';
 
 export interface RootState {
   allTags: Tag[];
   leftColumnId: SearchOrTag;
+  preferences: {
+    open: boolean,
+  };
   search: {
     files: ITreeNodeFile[];
     selectedTags: Tag[];
@@ -30,6 +34,9 @@ export interface RootState {
 export const initialState: RootState = {
   allTags: TagsModel.instance.getTags(),
   leftColumnId: 'search',
+  preferences: {
+    open: false,
+  },
   search: {
     files: FileTreeHelper.getFilteredFiles(),
     selectedTags: [],
@@ -54,4 +61,7 @@ declare global {
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(rootReducer, composeEnhancers());
+
+listener(store.dispatch);
+
 export default store;

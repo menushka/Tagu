@@ -10,6 +10,8 @@ import {
   SWITCH_COLUMN,
   UPDATE_ADD_TAGS,
   DELETE_TAG,
+  OPEN_PREFERENCES,
+  CLOSE_PREFERENCES,
 } from '../store/types';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
@@ -19,6 +21,14 @@ import { ImagesModel } from '../models/imagesModel';
 export const switchColumn = (id: SearchOrTag): ActionTypes => ({
   type: SWITCH_COLUMN,
   id,
+});
+
+export const openPreferences = (): ActionTypes => ({
+  type: OPEN_PREFERENCES,
+});
+
+export const closePreferences = (): ActionTypes => ({
+  type: CLOSE_PREFERENCES,
 });
 //#endregion
 
