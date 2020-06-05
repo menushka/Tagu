@@ -12,10 +12,30 @@ import {
   DELETE_TAG,
   OPEN_PREFERENCES,
   CLOSE_PREFERENCES,
+  READ_PREFERENCES_FILE,
+  WRITE_PREFERENCES_FILE,
 } from '../store/types';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
+import { IStorage, Storage } from '../persistent/storage';
 import { ImagesModel } from '../models/imagesModel';
+
+//#region Preferences IO handling
+export const readPreferencesFile = (): ActionTypes => {
+  const preferences = Storage.read();
+  return ({
+    type: READ_PREFERENCES_FILE,
+    preferences,
+  });
+};
+
+export const writePreferencesFile = (preferences: IStorage): ActionTypes => {
+  Storage.write(preferences);
+  return ({
+    type: WRITE_PREFERENCES_FILE,
+  });
+};
+//#endregion
 
 //#region UI State handling
 export const switchColumn = (id: SearchOrTag): ActionTypes => ({

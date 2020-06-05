@@ -15,6 +15,7 @@ export interface RootState {
   leftColumnId: SearchOrTag;
   preferences: {
     open: boolean,
+    dataPath: string,
   };
   search: {
     files: ITreeNodeFile[];
@@ -36,6 +37,7 @@ export const initialState: RootState = {
   leftColumnId: 'search',
   preferences: {
     open: false,
+    dataPath: '',
   },
   search: {
     files: FileTreeHelper.getFilteredFiles(),

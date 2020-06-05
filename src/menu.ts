@@ -9,11 +9,12 @@ export function template(win: BrowserWindow): Electron.MenuItemConstructorOption
       submenu: [
         { role: 'about' },
         { type: 'separator' },
-        { role: 'services' },
         {
-          label: 'Preferences',
+          label: 'Preferences...',
+          accelerator: 'CmdOrCtrl+,',
           click: () => sender(win, openPreferences()),
         },
+        { role: 'services' },
         { type: 'separator' },
         { role: 'hide' },
         { role: 'hideOthers' },

@@ -11,6 +11,7 @@ import {
   DELETE_TAG,
   OPEN_PREFERENCES,
   CLOSE_PREFERENCES,
+  READ_PREFERENCES_FILE,
 } from '../store/types';
 import { initialState, RootState } from '../store/store';
 import { ImagesModel } from '../models/imagesModel';
@@ -22,6 +23,8 @@ export default function rootReducer(
   action: ActionTypes,
 ): RootState {
   switch (action.type) {
+    case READ_PREFERENCES_FILE:
+      return { ...state, preferences: { ...state.preferences, ...action.preferences } };
     case DROP_FILE:
       return { ...state, new: { ...state.new, droppedFile: action.path } };
     case UPDATE_ADD_TAGS:

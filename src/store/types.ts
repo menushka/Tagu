@@ -1,5 +1,22 @@
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
+import { IStorage } from '../persistent/storage';
+
+//#region Preferences IO handling
+export const READ_PREFERENCES_FILE = 'READ_PREFERENCES_FILE';
+export const WRITE_PREFERENCES_FILE = 'WRITE_PREFERENCES_FILE';
+
+interface ReadPreferencesFile {
+  type: typeof READ_PREFERENCES_FILE;
+  preferences: IStorage;
+}
+
+interface WritePreferencesFile {
+  type: typeof WRITE_PREFERENCES_FILE;
+}
+
+type PreferencesActionTypes = ReadPreferencesFile | WritePreferencesFile;
+//#endregion
 
 //#region UI State handling
 export type SearchOrTag = 'search' | 'tag';
@@ -84,4 +101,4 @@ interface UpdateSearchTags {
 type FileTreeActionTypes = SelectFile | DeleteFile | DeleteTag | UpdateSearchTags;
 //#endregion
 
-export type ActionTypes = UIStateActionTypes | NewFilesActionTypes | FileTreeActionTypes;
+export type ActionTypes = PreferencesActionTypes | UIStateActionTypes | NewFilesActionTypes | FileTreeActionTypes;
