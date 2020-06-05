@@ -10,7 +10,7 @@ import { onDropFile, readPreferencesFile } from '../actions/actions';
 
 import Media from './Media';
 import NewFileDialog from './NewFileDialog';
-import Preferences from './Preferences';
+import PreferencesDialog from './PreferencesDialog';
 import LeftColumn from './LeftColumn';
 
 type MainProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
@@ -29,7 +29,7 @@ class Main extends React.Component<MainProps, {}> {
           <div {...getRootProps()}>
           <input {...getInputProps()} />
           <NewFileDialog />
-          <Preferences />
+          <PreferencesDialog />
           <SplitPane minSize={250} >
             <LeftColumn />
             <div style={{height: '100vh'}}>

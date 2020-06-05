@@ -1,6 +1,6 @@
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
-import { IStorage } from '../persistent/storage';
+import { IPreferences } from '../persistent/preferences';
 
 //#region Preferences IO handling
 export const READ_PREFERENCES_FILE = 'READ_PREFERENCES_FILE';
@@ -8,7 +8,7 @@ export const WRITE_PREFERENCES_FILE = 'WRITE_PREFERENCES_FILE';
 
 interface ReadPreferencesFile {
   type: typeof READ_PREFERENCES_FILE;
-  preferences: IStorage;
+  preferences: IPreferences;
 }
 
 interface WritePreferencesFile {

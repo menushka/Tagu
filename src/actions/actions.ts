@@ -17,20 +17,20 @@ import {
 } from '../store/types';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
-import { IStorage, Storage } from '../persistent/storage';
+import { IPreferences, Preferences } from '../persistent/preferences';
 import { ImagesModel } from '../models/imagesModel';
 
 //#region Preferences IO handling
 export const readPreferencesFile = (): ActionTypes => {
-  const preferences = Storage.read();
+  const preferences = Preferences.read();
   return ({
     type: READ_PREFERENCES_FILE,
     preferences,
   });
 };
 
-export const writePreferencesFile = (preferences: IStorage): ActionTypes => {
-  Storage.write(preferences);
+export const writePreferencesFile = (preferences: IPreferences): ActionTypes => {
+  Preferences.write(preferences);
   return ({
     type: WRITE_PREFERENCES_FILE,
   });

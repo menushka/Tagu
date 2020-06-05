@@ -27,12 +27,10 @@ class LeftColumn extends React.Component<LeftColumnProps, {}> {
 
   onSelectedTagsChange(tags: Tag[]) {
     this.setState({ selectedTags: tags });
-    // this.props.onTagsChange(tags);
   }
 
   onSelectedImageChange(image: Image | undefined) {
     this.setState({ selectedImage: image });
-    // this.props.onImageChange(image);
   }
 
   onExport() {

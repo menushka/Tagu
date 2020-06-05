@@ -8,10 +8,14 @@ import { RootState } from '../store/store';
 
 import { closePreferences } from '../actions/actions';
 
-type PreferencesProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
+type PreferencesDialogState = {
+  dataPath: string,
+};
 
-class Preferences extends React.Component<PreferencesProps, {}> {
-  constructor(props: PreferencesProps) {
+type PreferencesDialogProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
+
+class PreferencesDialog extends React.Component<PreferencesDialogProps, PreferencesDialogState> {
+  constructor(props: PreferencesDialogProps) {
     super(props);
 
     this.state = {
@@ -32,7 +36,7 @@ class Preferences extends React.Component<PreferencesProps, {}> {
         onClose={this.props.onClose}>
         <div className={Classes.DIALOG_BODY}>
           <Label style={{ marginBottom: '5px' }}>Data Path</Label>
-          <FileInput text='Select data path...' onInputChange={this.setDataPath} fill={true} />
+          <FileInput text={this.state.dataPath} onInputChange={this.setDataPath} fill={true} />
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <Button text='Save' onClick={this.props.onSave} icon='saved' fill={true} style={{ marginTop: '10px' }}/>
@@ -55,4 +59,4 @@ const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({
 export default connect(
   MapStateToProps,
   MapDispatchToProps,
-)(Preferences);
+)(PreferencesDialog);
