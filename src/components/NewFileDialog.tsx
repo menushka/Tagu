@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { Dialog, Classes, Button } from '@blueprintjs/core';
 
-import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { ActionTypes } from '../store/types';
-import { RootState } from '../store/store';
+import { RootState, AppDispatch } from '../store/store';
 
 import TagSearch from './TagSearch';
 
@@ -39,7 +37,7 @@ const MapStateToProps = (store: RootState) => ({
   selectedTags: store.new.selectedTags,
 });
 
-const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({
+const MapDispatchToProps = (dispatch: AppDispatch) => ({
   onAdd: (path: string, tags: Tag[]) => dispatch(saveNewFile(path, tags)),
   onClose: () => dispatch(cancelNewFile()),
 });

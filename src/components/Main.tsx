@@ -2,10 +2,8 @@ import * as React from 'react';
 import Dropzone from 'react-dropzone';
 import SplitPane from 'react-split-pane';
 
-import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { ActionTypes } from '../store/types';
-import { RootState } from '../store/store';
+import { RootState, AppDispatch } from '../store/store';
 import { onDropFile, readPreferencesFile } from '../actions/actions';
 
 import Media from './Media';
@@ -30,7 +28,7 @@ class Main extends React.Component<MainProps, {}> {
           <input {...getInputProps()} />
           <NewFileDialog />
           <PreferencesDialog />
-          <SplitPane minSize={250} >
+          <SplitPane minSize={250} maxSize={-250}>
             <LeftColumn />
             <div style={{height: '100vh'}}>
               <Media />
@@ -45,7 +43,7 @@ class Main extends React.Component<MainProps, {}> {
 
 const MapStateToProps = (_store: RootState) => ({});
 
-const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({
+const MapDispatchToProps = (dispatch: AppDispatch) => ({
   initialize: () => dispatch(readPreferencesFile()),
   onFileDrop: (acceptedFiles: File[]) => dispatch(onDropFile(acceptedFiles[0].path)),
 });

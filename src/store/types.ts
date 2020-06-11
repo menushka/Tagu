@@ -1,6 +1,14 @@
 import { Tag } from '../data/tag';
-import { Image } from '../data/image';
 import { IPreferences } from '../persistent/preferences';
+import { ITreeNodeFile } from '../components/FileTree';
+import { RootState } from './store';
+
+type RecursivePartial<T> = {
+  [P in keyof T]?:
+    T[P] extends (infer U)[] ? RecursivePartial<U>[] :
+    T[P] extends object ? RecursivePartial<T[P]> :
+    T[P];
+};
 
 //#region Preferences IO handling
 export const READ_PREFERENCES_FILE = 'READ_PREFERENCES_FILE';
@@ -46,6 +54,7 @@ export const DROP_FILE = 'DROP_FILE';
 export const UPDATE_ADD_TAGS = 'UPDATE_ADD_TAGS';
 export const SAVE_NEW_FILE = 'SAVE_NEW_FILE';
 export const CANCEL_ADD_FILE = 'CANCEL_ADD_FILE';
+export const UPDATE_IMAGES_AND_TAGS = 'UPDATE_IMAGES_AND_TAGS';
 
 interface DropFile {
   type: typeof DROP_FILE;
@@ -59,15 +68,18 @@ interface UpdateAddTags {
 
 interface SaveNewFile {
   type: typeof SAVE_NEW_FILE;
-  path: string;
-  tags: Tag[];
 }
 
 interface CancelAddFile {
   type: typeof CANCEL_ADD_FILE;
 }
 
-type NewFilesActionTypes = DropFile | UpdateAddTags | SaveNewFile | CancelAddFile;
+interface UpdateImagesAndTags {
+  type: typeof UPDATE_IMAGES_AND_TAGS;
+  newState: RecursivePartial<RootState>;
+}
+
+type NewFilesActionTypes = DropFile | UpdateAddTags | SaveNewFile | CancelAddFile | UpdateImagesAndTags;
 //#endregion
 
 //#region File tree management
@@ -79,23 +91,21 @@ export const UPDATE_SEARCH_TAGS = 'UPDATE_SEARCH_TAGS';
 
 interface SelectFile {
   type: typeof SELECT_FILE;
-  column: SearchOrTag;
-  node: number[];
+  newState: RecursivePartial<RootState>;
 }
 
 interface DeleteFile {
   type: typeof DELETE_FILE;
-  file: Image;
 }
 
 interface DeleteTag {
   type: typeof DELETE_TAG;
-  tag: Tag;
 }
 
 interface UpdateSearchTags {
   type: typeof UPDATE_SEARCH_TAGS;
   searchTags: Tag[];
+  searchFiles: ITreeNodeFile[];
 }
 
 type FileTreeActionTypes = SelectFile | DeleteFile | DeleteTag | UpdateSearchTags;

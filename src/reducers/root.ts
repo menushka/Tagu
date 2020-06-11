@@ -1,3 +1,4 @@
+import { cloneDeep, merge } from 'lodash';
 import {
   ActionTypes,
   DROP_FILE,
@@ -5,18 +6,14 @@ import {
   CANCEL_ADD_FILE,
   SELECT_FILE,
   SWITCH_COLUMN,
-  DELETE_FILE,
   UPDATE_ADD_TAGS,
   UPDATE_SEARCH_TAGS,
-  DELETE_TAG,
   OPEN_PREFERENCES,
   CLOSE_PREFERENCES,
   READ_PREFERENCES_FILE,
+  UPDATE_IMAGES_AND_TAGS,
 } from '../store/types';
 import { initialState, RootState } from '../store/store';
-import { ImagesModel } from '../models/imagesModel';
-import { FileTreeHelper } from '../helpers/fileTreeHelper';
-import { TagsModel } from '../models/tagsModel';
 
 export default function rootReducer(
   state = initialState,
@@ -30,15 +27,11 @@ export default function rootReducer(
     case UPDATE_ADD_TAGS:
       return { ...state, new: { ...state.new, selectedTags: action.addTags } };
     case SAVE_NEW_FILE:
-      console.log(TagsModel.instance.getTags());
-      return { ...state,
-        allTags: TagsModel.instance.getTags(),
-        search: { ...state.search, files: FileTreeHelper.getFilteredFiles(state.search.selectedTags) },
-        tag: { ...state.tag, files: FileTreeHelper.getFilesByTag() },
-        new: { ...state.new, droppedFile: null },
-      };
+      return { ...state, new: { ...state.new, droppedFile: null } };
     case CANCEL_ADD_FILE:
       return { ...state, new: { ...state.new, droppedFile: null } };
+    case UPDATE_IMAGES_AND_TAGS:
+      return cloneDeep(merge(state, action.newState));
     case SWITCH_COLUMN:
       return { ...state, leftColumnId: action.id };
     case OPEN_PREFERENCES:
@@ -46,40 +39,11 @@ export default function rootReducer(
     case CLOSE_PREFERENCES:
       return { ...state, preferences: { ...state.preferences, open: false } };
     case SELECT_FILE:
-      let files;
-      let selectedFile;
-      switch (action.column) {
-        case 'search':
-          files = state.search.files.map((arr) => { return {...arr}; });
-          selectedFile = FileTreeHelper.selectAtPath(files, action.node);
-          selectedFile = selectedFile ? selectedFile : state.search.selectedFile; // Fallback if not file
-          return { ...state, search: { ...state.search, files, selectedFile } };
-        case 'tag':
-          files = state.tag.files.map((arr) => { return {...arr}; });
-          selectedFile = FileTreeHelper.selectAtPath(files, action.node);
-          selectedFile = selectedFile ? selectedFile : state.tag.selectedFile; // Fallback if not file
-          return { ...state, tag: { ...state.tag, files, selectedFile } };
-      }
-    case DELETE_FILE:
-      ImagesModel.instance.removeImage(action.file);
-      return { ...state,
-        allTags: TagsModel.instance.getTags(),
-        search: { ...state.search, files: FileTreeHelper.getFilteredFiles(state.search.selectedTags) },
-        tag: { ...state.tag, files: FileTreeHelper.getFilesByTag() },
-        new: { ...state.new, droppedFile: null },
-      };
-    case DELETE_TAG:
-      TagsModel.instance.removeTag(action.tag);
-      return { ...state,
-        allTags: TagsModel.instance.getTags(),
-        search: { ...state.search, files: FileTreeHelper.getFilteredFiles(state.search.selectedTags) },
-        tag: { ...state.tag, files: FileTreeHelper.getFilesByTag() },
-        new: { ...state.new, droppedFile: null },
-      };
+      return cloneDeep(merge(state, action.newState));
     case UPDATE_SEARCH_TAGS:
       return { ...state, search: { ...state.search,
         selectedTags: action.searchTags,
-        files: FileTreeHelper.getFilteredFiles(action.searchTags),
+        files: action.searchFiles,
       } };
     default:
       return state;

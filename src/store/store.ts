@@ -1,4 +1,5 @@
-import { createStore, compose } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
+import thunk, { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import rootReducer from '../reducers/root';
 
 import { ITreeNodeFile } from '../components/FileTree';
@@ -7,7 +8,7 @@ import { Image } from '../data/image';
 import { FileTreeHelper } from '../helpers/fileTreeHelper';
 
 import { TagsModel } from '../models/tagsModel';
-import { SearchOrTag } from './types';
+import { SearchOrTag, ActionTypes } from './types';
 import { listener } from './electronListener';
 
 export interface RootState {
@@ -31,6 +32,19 @@ export interface RootState {
     selectedTags: Tag[];
   };
 }
+
+export type AppDispatch = ThunkDispatch<
+  RootState,
+  void,
+  ActionTypes
+>;
+
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  ActionTypes
+>;
 
 export const initialState: RootState = {
   allTags: TagsModel.instance.getTags(),
@@ -62,7 +76,7 @@ declare global {
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-const store = createStore(rootReducer, composeEnhancers());
+const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
 listener(store.dispatch);
 

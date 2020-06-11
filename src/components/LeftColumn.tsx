@@ -3,10 +3,9 @@ import { Tabs, Tab, Button } from '@blueprintjs/core';
 
 import { remote } from 'electron';
 
-import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { ActionTypes, SearchOrTag } from '../store/types';
-import { RootState } from '../store/store';
+import { SearchOrTag } from '../store/types';
+import { RootState, AppDispatch } from '../store/store';
 
 import TagSearch from './TagSearch';
 import FileTree from './FileTree';
@@ -78,7 +77,7 @@ const MapStateToProps = (store: RootState) => ({
   currentFileTree: store.leftColumnId === 'search' ? store.search.files : store.tag.files,
 });
 
-const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({
+const MapDispatchToProps = (dispatch: AppDispatch) => ({
   onTabChange: (id: SearchOrTag) => dispatch(switchColumn(id)),
 });
 

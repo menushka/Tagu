@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { Dialog, Classes, Button, FileInput, Label } from '@blueprintjs/core';
 
-import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { ActionTypes } from '../store/types';
-import { RootState } from '../store/store';
+import { RootState, AppDispatch } from '../store/store';
 
 import { closePreferences } from '../actions/actions';
 
@@ -51,7 +49,7 @@ const MapStateToProps = (store: RootState) => ({
   savedDataPath: store.preferences.dataPath,
 });
 
-const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>) => ({
+const MapDispatchToProps = (dispatch: AppDispatch) => ({
   onClose: () => dispatch(closePreferences()),
   onSave: () => { console.log('Implement'); },
 });

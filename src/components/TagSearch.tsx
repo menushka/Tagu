@@ -2,10 +2,8 @@ import * as React from 'react';
 import { MenuItem } from '@blueprintjs/core';
 import { MultiSelect } from '@blueprintjs/select';
 
-import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { ActionTypes } from '../store/types';
-import { RootState } from '../store/store';
+import { RootState, AppDispatch } from '../store/store';
 
 import { Tag } from '../data/tag';
 import { updateSearchTags, updateAddTags } from '../actions/actions';
@@ -93,7 +91,7 @@ const MapStateToProps = (store: RootState, ownProps: OwnProps) => ({
   selectedTags: ownProps.create ? store.new.selectedTags : store.search.selectedTags,
 });
 
-const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>, ownProps: OwnProps) => ({
+const MapDispatchToProps = (dispatch: AppDispatch, ownProps: OwnProps) => ({
   updateTags: (tags: Tag[]) => dispatch(ownProps.create ? updateAddTags(tags) : updateSearchTags(tags)),
 });
 

@@ -1,10 +1,8 @@
 import * as React from 'react';
 import { ITreeNode, Tree, ContextMenu, Menu, MenuItem } from '@blueprintjs/core';
 
-import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { ActionTypes } from '../store/types';
-import { RootState } from '../store/store';
+import { RootState, AppDispatch } from '../store/store';
 
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
@@ -58,7 +56,7 @@ const MapStateToProps = (store: RootState, ownProps: OwnProps) => ({
   files: ownProps.byTag ? store.tag.files : store.search.files,
 });
 
-const MapDispatchToProps = (dispatch: Dispatch<ActionTypes>, ownProps: OwnProps) => ({
+const MapDispatchToProps = (dispatch: AppDispatch, ownProps: OwnProps) => ({
   onSelect: (_nodeData: ITreeNode, nodePath: number[]) => dispatch(selectFile(ownProps.byTag ? 'tag' : 'search', nodePath)),
   onDeleteImage: (image: Image) => dispatch(deleteFile(image)),
   onDeleteTag: (tag: Tag) => dispatch(deleteTag(tag)),

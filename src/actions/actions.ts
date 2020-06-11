@@ -1,3 +1,4 @@
+import { ThunkDispatch } from 'redux-thunk';
 import {
   ActionTypes,
   SearchOrTag,
@@ -14,11 +15,33 @@ import {
   CLOSE_PREFERENCES,
   READ_PREFERENCES_FILE,
   WRITE_PREFERENCES_FILE,
+  UPDATE_IMAGES_AND_TAGS,
 } from '../store/types';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
 import { IPreferences, Preferences } from '../persistent/preferences';
 import { ImagesModel } from '../models/imagesModel';
+import { AppThunk, RootState } from '../store/store';
+import { TagsModel } from '../models/tagsModel';
+import { FileTreeHelper } from '../helpers/fileTreeHelper';
+
+function dispatchUpdateFullUpdate(dispatch: ThunkDispatch<RootState, unknown, ActionTypes>, getState: () => RootState) {
+  const allTags = TagsModel.instance.getTags();
+  const searchFiles = FileTreeHelper.getFilteredFiles(getState().search.selectedTags);
+  const tagFiles = FileTreeHelper.getFilesByTag();
+  dispatch({
+    type: UPDATE_IMAGES_AND_TAGS,
+    newState: {
+      allTags,
+      search: {
+        files: searchFiles,
+      },
+      tag: {
+        files: tagFiles,
+      },
+    },
+  });
+}
 
 //#region Preferences IO handling
 export const readPreferencesFile = (): ActionTypes => {
@@ -58,18 +81,19 @@ export const onDropFile = (path: string): ActionTypes => ({
   path,
 });
 
-export const updateAddTags = (addTags: Tag[]): ActionTypes => ({
-  type: UPDATE_ADD_TAGS,
-  addTags,
-});
+export const updateAddTags = (addTags: Tag[]): AppThunk => async (dispatch) => {
+  dispatch({
+    type: UPDATE_ADD_TAGS,
+    addTags,
+  });
+};
 
-export const saveNewFile = (path: string, tags: Tag[]): ActionTypes => {
+export const saveNewFile = (path: string, tags: Tag[]): AppThunk => async (dispatch, getState) => {
   ImagesModel.instance.addImage(path, tags);
-  return {
+  dispatch({
     type: SAVE_NEW_FILE,
-    path,
-    tags,
-  };
+  });
+  dispatchUpdateFullUpdate(dispatch, getState);
 };
 
 export const cancelNewFile = (): ActionTypes => ({
@@ -78,24 +102,58 @@ export const cancelNewFile = (): ActionTypes => ({
 //#endregion
 
 //#region File tree management
-export const selectFile = (column: SearchOrTag, node: number[]): ActionTypes => ({
-  type: SELECT_FILE,
-  column,
-  node,
-});
+export const selectFile = (column: SearchOrTag, node: number[]): AppThunk => async (dispatch, getState) => {
+  let files;
+  let selectedFile;
+  switch (column) {
+    case 'search':
+      files = getState().search.files.map((arr) => { return {...arr}; });
+      selectedFile = FileTreeHelper.selectAtPath(files, node);
+      selectedFile = selectedFile ? selectedFile : getState().search.selectedFile; // Fallback if not file
+      // return { ...state, search: { ...state.search, files, selectedFile } };
+      dispatch({
+        type: SELECT_FILE,
+        newState: {
+          search: { files, selectedFile },
+        },
+      });
+      break;
+    case 'tag':
+      files = getState().tag.files.map((arr) => { return {...arr}; });
+      selectedFile = FileTreeHelper.selectAtPath(files, node);
+      selectedFile = selectedFile ? selectedFile : getState().tag.selectedFile; // Fallback if not file
+      dispatch({
+        type: SELECT_FILE,
+        newState: {
+          tag: { files, selectedFile },
+        },
+      });
+      break;
+  }
+};
 
-export const deleteFile = (file: Image): ActionTypes => ({
-  type: DELETE_FILE,
-  file,
-});
+export const deleteFile = (file: Image): AppThunk => async (dispatch, getState) => {
+  ImagesModel.instance.removeImage(file);
+  dispatch({
+    type: DELETE_FILE,
+  });
+  dispatchUpdateFullUpdate(dispatch, getState);
+};
 
-export const deleteTag = (tag: Tag): ActionTypes => ({
-  type: DELETE_TAG,
-  tag,
-});
+export const deleteTag = (tag: Tag): AppThunk => async (dispatch, getState) => {
+  TagsModel.instance.removeTag(tag);
+  dispatch({
+    type: DELETE_TAG,
+  });
+  dispatchUpdateFullUpdate(dispatch, getState);
+};
 
-export const updateSearchTags = (searchTags: Tag[]): ActionTypes => ({
-  type: UPDATE_SEARCH_TAGS,
-  searchTags,
-});
+export const updateSearchTags = (searchTags: Tag[]): AppThunk => async (dispatch) => {
+  const searchFiles = FileTreeHelper.getFilteredFiles(searchTags);
+  dispatch({
+    type: UPDATE_SEARCH_TAGS,
+    searchTags,
+    searchFiles,
+  });
+};
 //#endregion

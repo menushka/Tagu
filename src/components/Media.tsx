@@ -1,9 +1,7 @@
 import * as React from 'react';
 
-import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-import { ActionTypes } from '../store/types';
-import { RootState } from '../store/store';
+import { RootState, AppDispatch } from '../store/store';
 
 import { Image } from '../data/image';
 import { NonIdealState } from '@blueprintjs/core';
@@ -27,7 +25,7 @@ const MapStateToProps = (store: RootState) => ({
   image: store.leftColumnId === 'search' ? store.search.selectedFile : store.tag.selectedFile,
 });
 
-const MapDispatchToProps = (_dispatch: Dispatch<ActionTypes>) => ({});
+const MapDispatchToProps = (_dispatch: AppDispatch) => ({});
 
 export default connect(
   MapStateToProps,
