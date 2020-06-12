@@ -23,7 +23,7 @@ export class Image {
     this.tags = tags;
   }
 
-  static getAbsolutePath(image: Image) {
-    return path.join(__dirname, '../../', 'images', image.path);
+  static getAbsolutePath(image: Image, dataPath: string) {
+    return path.join(dataPath, 'images', image.path);
   }
 }

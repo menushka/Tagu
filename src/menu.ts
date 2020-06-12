@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron';
-import { sender } from './store/electronListener';
+import { dispatchFromElectron } from './electron/redux';
 import { openPreferences } from './actions/actions';
 
 export function template(win: BrowserWindow): Electron.MenuItemConstructorOptions[] {
@@ -12,7 +12,7 @@ export function template(win: BrowserWindow): Electron.MenuItemConstructorOption
         {
           label: 'Preferences...',
           accelerator: 'CmdOrCtrl+,',
-          click: () => sender(win, openPreferences()),
+          click: () => dispatchFromElectron(win, openPreferences()),
         },
         { role: 'services' },
         { type: 'separator' },
@@ -27,12 +27,12 @@ export function template(win: BrowserWindow): Electron.MenuItemConstructorOption
       label: 'View',
       submenu: [
         { role: 'reload' },
-        { role: 'forcereload' },
-        { role: 'toggledevtools' },
+        { role: 'forceReload' },
+        { role: 'toggleDevTools' },
         { type: 'separator' },
-        { role: 'resetzoom' },
-        { role: 'zoomin' },
-        { role: 'zoomout' },
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
         { type: 'separator' },
         { role: 'togglefullscreen' },
       ],

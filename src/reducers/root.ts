@@ -1,5 +1,6 @@
-import { cloneDeep, merge } from 'lodash';
+import { cloneDeep, isArray, mergeWith } from 'lodash';
 import {
+  RecursivePartial,
   ActionTypes,
   DROP_FILE,
   SAVE_NEW_FILE,
@@ -12,8 +13,19 @@ import {
   CLOSE_PREFERENCES,
   READ_PREFERENCES_FILE,
   UPDATE_IMAGES_AND_TAGS,
+  WRITE_PREFERENCES_FILE,
 } from '../store/types';
 import { initialState, RootState } from '../store/store';
+
+function mergeState(state: RootState, newState: RecursivePartial<RootState>) {
+  return cloneDeep(mergeWith(state, newState, (objValue: any, srcValue: any) => {
+    if (isArray(objValue)) {
+      return srcValue;
+    } else {
+      return undefined;
+    }
+  }));
+}
 
 export default function rootReducer(
   state = initialState,
@@ -21,7 +33,9 @@ export default function rootReducer(
 ): RootState {
   switch (action.type) {
     case READ_PREFERENCES_FILE:
-      return { ...state, preferences: { ...state.preferences, ...action.preferences } };
+      return mergeState(state, { preferences: action.preferences });
+    case WRITE_PREFERENCES_FILE:
+      return mergeState(state, { preferences: action.preferences });
     case DROP_FILE:
       return { ...state, new: { ...state.new, droppedFile: action.path } };
     case UPDATE_ADD_TAGS:
@@ -31,7 +45,7 @@ export default function rootReducer(
     case CANCEL_ADD_FILE:
       return { ...state, new: { ...state.new, droppedFile: null } };
     case UPDATE_IMAGES_AND_TAGS:
-      return cloneDeep(merge(state, action.newState));
+      return mergeState(state, action.newState);
     case SWITCH_COLUMN:
       return { ...state, leftColumnId: action.id };
     case OPEN_PREFERENCES:
@@ -39,7 +53,7 @@ export default function rootReducer(
     case CLOSE_PREFERENCES:
       return { ...state, preferences: { ...state.preferences, open: false } };
     case SELECT_FILE:
-      return cloneDeep(merge(state, action.newState));
+      return mergeState(state, action.newState);
     case UPDATE_SEARCH_TAGS:
       return { ...state, search: { ...state.search,
         selectedTags: action.searchTags,

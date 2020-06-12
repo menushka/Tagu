@@ -17,7 +17,7 @@ class Main extends React.Component<MainProps, {}> {
   constructor(props: MainProps) {
     super(props);
 
-    this.props.initialize();
+    this.props.readPreferences();
   }
 
   render() {
@@ -44,7 +44,7 @@ class Main extends React.Component<MainProps, {}> {
 const MapStateToProps = (_store: RootState) => ({});
 
 const MapDispatchToProps = (dispatch: AppDispatch) => ({
-  initialize: () => dispatch(readPreferencesFile()),
+  readPreferences: () => dispatch(readPreferencesFile()),
   onFileDrop: (acceptedFiles: File[]) => dispatch(onDropFile(acceptedFiles[0].path)),
 });
 

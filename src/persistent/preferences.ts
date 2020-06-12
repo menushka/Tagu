@@ -16,10 +16,9 @@ export class Preferences {
     }
   }
 
-  static write(storage: IPreferences): void {
+  static write(preferences: IPreferences): void {
     const filePath = Preferences.getStorageFilePath();
-    fs.ensureFileSync(filePath);
-    fs.writeJsonSync(filePath, storage);
+    fs.outputJSONSync(filePath, preferences);
   }
 
   private static getApplicationPath() {

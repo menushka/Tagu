@@ -24,6 +24,7 @@ import { ImagesModel } from '../models/imagesModel';
 import { AppThunk, RootState } from '../store/store';
 import { TagsModel } from '../models/tagsModel';
 import { FileTreeHelper } from '../helpers/fileTreeHelper';
+import { Database } from '../db/database';
 
 function dispatchUpdateFullUpdate(dispatch: ThunkDispatch<RootState, unknown, ActionTypes>, getState: () => RootState) {
   const allTags = TagsModel.instance.getTags();
@@ -44,19 +45,24 @@ function dispatchUpdateFullUpdate(dispatch: ThunkDispatch<RootState, unknown, Ac
 }
 
 //#region Preferences IO handling
-export const readPreferencesFile = (): ActionTypes => {
+export const readPreferencesFile = (): AppThunk => async (dispatch, getState) => {
   const preferences = Preferences.read();
-  return ({
+  Database.instance.init(preferences.dataPath);
+  dispatch({
     type: READ_PREFERENCES_FILE,
     preferences,
   });
+  dispatchUpdateFullUpdate(dispatch, getState);
 };
 
-export const writePreferencesFile = (preferences: IPreferences): ActionTypes => {
+export const writePreferencesFile = (preferences: IPreferences): AppThunk => async (dispatch, getState) => {
   Preferences.write(preferences);
-  return ({
+  Database.instance.switch(preferences.dataPath);
+  dispatch({
     type: WRITE_PREFERENCES_FILE,
+    preferences,
   });
+  dispatchUpdateFullUpdate(dispatch, getState);
 };
 //#endregion
 
@@ -89,7 +95,7 @@ export const updateAddTags = (addTags: Tag[]): AppThunk => async (dispatch) => {
 };
 
 export const saveNewFile = (path: string, tags: Tag[]): AppThunk => async (dispatch, getState) => {
-  ImagesModel.instance.addImage(path, tags);
+  ImagesModel.instance.addImage(path, tags, getState().preferences.dataPath);
   dispatch({
     type: SAVE_NEW_FILE,
   });
@@ -133,7 +139,7 @@ export const selectFile = (column: SearchOrTag, node: number[]): AppThunk => asy
 };
 
 export const deleteFile = (file: Image): AppThunk => async (dispatch, getState) => {
-  ImagesModel.instance.removeImage(file);
+  ImagesModel.instance.removeImage(file, getState().preferences.dataPath);
   dispatch({
     type: DELETE_FILE,
   });

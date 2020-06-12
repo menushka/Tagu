@@ -1,4 +1,5 @@
 import * as Realm from 'realm';
+import * as path from 'path';
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
 
@@ -11,17 +12,22 @@ export class Database {
     return Database._instance;
   }
 
-  private realm: Realm;
+  public realm: Realm;
   private schemas: (Realm.ObjectSchema | Realm.ObjectClass)[] = [Image.schema, Tag.schema];
 
   images: DatabaseType<Image> = new DatabaseType('Image', () => this.realm, (entry) => entry.path);
   tags: DatabaseType<Tag> = new DatabaseType('Tag', () => this.realm, (entry) => entry.name);
 
-  private constructor() {
+  init(dataPath: string) {
     this.realm = new Realm({
-      path: 'data/data.realm',
+      path: path.join(dataPath, 'data', 'data.realm'),
       schema: this.schemas,
     });
+  }
+
+  switch(dataPath: string) {
+    this.close();
+    this.init(dataPath);
   }
 
   close() {

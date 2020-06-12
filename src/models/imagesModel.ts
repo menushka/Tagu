@@ -26,18 +26,16 @@ export class ImagesModel {
     }
   }
 
-  addImage(addImagePath: string, tags: Tag[]) {
+  addImage(addImagePath: string, tags: Tag[], dataPath: string) {
     const fileName = path.basename(addImagePath);
-    const newFilePath = path.join(__dirname, '../../', 'images', fileName);
-    fs.ensureDirSync(path.join(__dirname, '../../', 'images'));
+    const newFilePath = path.join(dataPath, 'images', fileName);
+    fs.ensureDirSync(path.join(dataPath, 'images'));
     fs.copySync(addImagePath, newFilePath);
-    console.log('start Image write');
     Database.instance.images.write(new Image(fileName, tags));
-    console.log('end Image write');
   }
 
-  removeImage(image: Image) {
-    const imagePath = Image.getAbsolutePath(image);
+  removeImage(image: Image, dataPath: string) {
+    const imagePath = Image.getAbsolutePath(image, dataPath);
     Database.instance.images.delete(image);
     fs.removeSync(imagePath);
   }

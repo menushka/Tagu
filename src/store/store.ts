@@ -5,19 +5,17 @@ import rootReducer from '../reducers/root';
 import { ITreeNodeFile } from '../components/FileTree';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
-import { FileTreeHelper } from '../helpers/fileTreeHelper';
 
-import { TagsModel } from '../models/tagsModel';
 import { SearchOrTag, ActionTypes } from './types';
-import { listener } from './electronListener';
+import { setupElectronReduxListeners } from '../electron/redux';
+import { IPreferences } from '../persistent/preferences';
 
 export interface RootState {
   allTags: Tag[];
   leftColumnId: SearchOrTag;
   preferences: {
     open: boolean,
-    dataPath: string,
-  };
+  } & IPreferences;
   search: {
     files: ITreeNodeFile[];
     selectedTags: Tag[];
@@ -47,19 +45,19 @@ export type AppThunk<ReturnType = void> = ThunkAction<
 >;
 
 export const initialState: RootState = {
-  allTags: TagsModel.instance.getTags(),
+  allTags: [],
   leftColumnId: 'search',
   preferences: {
     open: false,
     dataPath: '',
   },
   search: {
-    files: FileTreeHelper.getFilteredFiles(),
+    files: [],
     selectedTags: [],
     selectedFile: null,
   },
   tag: {
-    files: FileTreeHelper.getFilesByTag(),
+    files: [],
     selectedFile: null,
   },
   new: {
@@ -78,6 +76,6 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
-listener(store.dispatch);
+setupElectronReduxListeners(store.dispatch);
 
 export default store;

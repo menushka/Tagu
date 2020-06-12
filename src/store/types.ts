@@ -3,7 +3,7 @@ import { IPreferences } from '../persistent/preferences';
 import { ITreeNodeFile } from '../components/FileTree';
 import { RootState } from './store';
 
-type RecursivePartial<T> = {
+export type RecursivePartial<T> = {
   [P in keyof T]?:
     T[P] extends (infer U)[] ? RecursivePartial<U>[] :
     T[P] extends object ? RecursivePartial<T[P]> :
@@ -21,6 +21,7 @@ interface ReadPreferencesFile {
 
 interface WritePreferencesFile {
   type: typeof WRITE_PREFERENCES_FILE;
+  preferences: IPreferences;
 }
 
 type PreferencesActionTypes = ReadPreferencesFile | WritePreferencesFile;

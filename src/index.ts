@@ -5,6 +5,7 @@ import { app, BrowserWindow, Menu } from 'electron';
 import { enableLiveReload } from 'electron-compile';
 
 import { template } from './menu';
+import { setupElectronFileDialogListeners } from './electron/fileDialog';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -38,6 +39,8 @@ const createWindow = async () => {
 
   const menu = Menu.buildFromTemplate(template(mainWindow));
   Menu.setApplicationMenu(menu);
+
+  setupElectronFileDialogListeners(mainWindow);
 
   if (process.env.REDUX_DEVTOOLS_PATH) {
     BrowserWindow.addDevToolsExtension(process.env.REDUX_DEVTOOLS_PATH);

@@ -16,7 +16,6 @@ export class TagsModel {
   private constructor() {}
 
   getTags(): Tag[] {
-    console.log('start Tag get');
     return ([] as Tag[]).concat(Database.instance.tags.query());
   }
 
