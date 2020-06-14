@@ -10,6 +10,7 @@ import Media from './Media';
 import NewFileDialog from './dialogs/NewFileDialog';
 import PreferencesDialog from './dialogs/PreferencesDialog';
 import LeftColumn from './LeftColumn';
+import EditTagDialog from './dialogs/EditTagDialog';
 
 type MainProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
@@ -27,6 +28,7 @@ class Main extends React.Component<MainProps, {}> {
           <div {...getRootProps()}>
           <input {...getInputProps()} />
           <NewFileDialog />
+          <EditTagDialog />
           <PreferencesDialog />
           <SplitPane minSize={250} maxSize={-250}>
             <LeftColumn />

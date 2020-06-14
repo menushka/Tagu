@@ -14,6 +14,8 @@ import {
   READ_PREFERENCES_FILE,
   UPDATE_IMAGES_AND_TAGS,
   WRITE_PREFERENCES_FILE,
+  EDIT_TAG,
+  EDIT_TAG_CANCEL,
 } from '../store/types';
 import { initialState, RootState } from '../store/store';
 
@@ -44,6 +46,10 @@ export default function rootReducer(
       return { ...state, new: { ...state.new, droppedFile: null } };
     case CANCEL_ADD_FILE:
       return { ...state, new: { ...state.new, droppedFile: null } };
+    case EDIT_TAG:
+      return { ...state, editTag: { ...state.editTag, tag: action.tag } };
+    case EDIT_TAG_CANCEL:
+      return { ...state, editTag: { ...state.editTag, tag: null } };
     case UPDATE_IMAGES_AND_TAGS:
       return mergeState(state, action.newState);
     case SWITCH_COLUMN:

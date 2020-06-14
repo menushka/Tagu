@@ -83,6 +83,22 @@ interface UpdateImagesAndTags {
 type NewFilesActionTypes = DropFile | UpdateAddTags | SaveNewFile | CancelAddFile | UpdateImagesAndTags;
 //#endregion
 
+//#region Edit tags
+export const EDIT_TAG = 'EDIT_TAG';
+export const EDIT_TAG_CANCEL = 'EDIT_TAG_CANCEL';
+
+interface EditTag {
+  type: typeof EDIT_TAG;
+  tag: Tag;
+}
+
+interface EditTagCancel {
+  type: typeof EDIT_TAG_CANCEL;
+}
+
+type EditTagActionTypes = EditTag | EditTagCancel;
+//#endregion
+
 //#region File tree management
 export const SELECT_FILE = 'SELECT_FILE';
 export const TOGGLE_FOLDER = 'TOGGLE_FOLDER';
@@ -112,4 +128,4 @@ interface UpdateSearchTags {
 type FileTreeActionTypes = SelectFile | DeleteFile | DeleteTag | UpdateSearchTags;
 //#endregion
 
-export type ActionTypes = PreferencesActionTypes | UIStateActionTypes | NewFilesActionTypes | FileTreeActionTypes;
+export type ActionTypes = PreferencesActionTypes | UIStateActionTypes | NewFilesActionTypes | EditTagActionTypes | FileTreeActionTypes;

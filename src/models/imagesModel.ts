@@ -31,6 +31,13 @@ export class ImagesModel {
     const newFilePath = path.join(dataPath, 'images', fileName);
     fs.ensureDirSync(path.join(dataPath, 'images'));
     fs.copySync(addImagePath, newFilePath);
+
+    // Because Realm doesn't auto increment, new Tags must be written first and merged with Image
+    const writtenNewTags = Database.instance.tags.writeMultiple(tags.filter(tag => tag.id === Database.UNSET_INDEX));
+    for (const tag of writtenNewTags) {
+      tags.find(t => t.name === tag.name)!.id = tag.id;
+    }
+
     Database.instance.images.write(new Image(fileName, tags));
   }
 

@@ -16,6 +16,8 @@ import {
   READ_PREFERENCES_FILE,
   WRITE_PREFERENCES_FILE,
   UPDATE_IMAGES_AND_TAGS,
+  EDIT_TAG,
+  EDIT_TAG_CANCEL,
 } from '../store/types';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
@@ -105,6 +107,25 @@ export const saveNewFile = (path: string, tags: Tag[]): AppThunk => async (dispa
 export const cancelNewFile = (): ActionTypes => ({
   type: CANCEL_ADD_FILE,
 });
+//#endregion
+export const openEditTag = (tag: Tag): AppThunk => async (dispatch) => {
+  dispatch({
+    type: EDIT_TAG,
+    tag,
+  });
+};
+
+export const closeEditTag = (): AppThunk => async (dispatch) => {
+  dispatch({
+    type: EDIT_TAG_CANCEL,
+  });
+};
+
+export const updateEditTag = (tag: Tag, tagName: string): AppThunk => async (dispatch, getState) => {
+  TagsModel.instance.updateTag(tag, tagName);
+  dispatchUpdateFullUpdate(dispatch, getState);
+};
+//#region Edit tags
 //#endregion
 
 //#region File tree management

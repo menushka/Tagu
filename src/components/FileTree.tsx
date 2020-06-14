@@ -6,7 +6,7 @@ import { RootState, AppDispatch } from '../store/store';
 
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
-import { selectFile, deleteFile, deleteTag } from '../actions/actions';
+import { selectFile, deleteFile, deleteTag, openEditTag } from '../actions/actions';
 
 type OwnProps = { byTag?: boolean };
 
@@ -32,7 +32,9 @@ class FileTree extends React.Component<FileTreeProps, {}> {
 
           const treeNode = (node as ITreeNodeFile);
 
-          const onEdit = () => { console.log('Not yet implemented'); };
+          const editImage = () => { this.props.onEditImage(treeNode.image!); };
+          const editTag = () => { this.props.onEditTag(treeNode.tag!); };
+          const onEdit = treeNode.type === 'file' ? editImage : editTag;
 
           const deleteImage = () => { this.props.onDeleteImage(treeNode.image!); };
           const deleteTag = () => { this.props.onDeleteTag(treeNode.tag!); };
@@ -58,7 +60,9 @@ const MapStateToProps = (store: RootState, ownProps: OwnProps) => ({
 
 const MapDispatchToProps = (dispatch: AppDispatch, ownProps: OwnProps) => ({
   onSelect: (_nodeData: ITreeNode, nodePath: number[]) => dispatch(selectFile(ownProps.byTag ? 'tag' : 'search', nodePath)),
+  onEditImage: (_image: Image) => { console.log('Not yet implemented.'); },
   onDeleteImage: (image: Image) => dispatch(deleteFile(image)),
+  onEditTag: (tag: Tag) => dispatch(openEditTag(tag)),
   onDeleteTag: (tag: Tag) => dispatch(deleteTag(tag)),
 });
 

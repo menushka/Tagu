@@ -25,6 +25,9 @@ export interface RootState {
     files: ITreeNodeFile[];
     selectedFile: Image | null;
   };
+  editTag: {
+    tag: Tag | null;
+  };
   new: {
     droppedFile: string | null;
     selectedTags: Tag[];
@@ -59,6 +62,9 @@ export const initialState: RootState = {
   tag: {
     files: [],
     selectedFile: null,
+  },
+  editTag: {
+    tag: null,
   },
   new: {
     droppedFile: null,
