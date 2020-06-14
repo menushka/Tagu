@@ -2,12 +2,12 @@ import * as React from 'react';
 import { Dialog, Classes, Button } from '@blueprintjs/core';
 
 import { connect } from 'react-redux';
-import { RootState, AppDispatch } from '../store/store';
+import { RootState, AppDispatch } from '../../store/store';
 
-import TagSearch from './TagSearch';
+import TagSearch from '../TagSearch';
 
-import { Tag } from '../data/tag';
-import { cancelNewFile, saveNewFile } from '../actions/actions';
+import { Tag } from '../../data/tag';
+import { cancelNewFile, saveNewFile } from '../../actions/actions';
 
 type NewFileDialogProps = ReturnType<typeof MergeProps>;
 

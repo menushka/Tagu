@@ -12,11 +12,13 @@ export class Database {
     return Database._instance;
   }
 
-  public realm: Realm;
+  public static UNSET_INDEX: number = -1;
+
+  private realm: Realm;
   private schemas: (Realm.ObjectSchema | Realm.ObjectClass)[] = [Image.schema, Tag.schema];
 
-  images: DatabaseType<Image> = new DatabaseType('Image', () => this.realm, (entry) => entry.path);
-  tags: DatabaseType<Tag> = new DatabaseType('Tag', () => this.realm, (entry) => entry.name);
+  images: DatabaseType<Image> = new DatabaseType('Image', () => this.realm);
+  tags: DatabaseType<Tag> = new DatabaseType('Tag', () => this.realm);
 
   init(dataPath: string) {
     this.realm = new Realm({
@@ -35,20 +37,22 @@ export class Database {
   }
 }
 
-class DatabaseType<T> {
+interface IndexedDatabaseEntry {
+  id: number;
+}
+
+class DatabaseType<T extends IndexedDatabaseEntry> {
 
   private name: string;
   private getRealm: () => Realm;
-  private getPrimaryKey: (entry: T) => string;
 
   private get realm() {
     return this.getRealm();
   }
 
-  constructor(name: string, getRealm: () => Realm, getPrimaryKey: (entry: T) => string) {
+  constructor(name: string, getRealm: () => Realm) {
     this.name = name;
     this.getRealm = getRealm;
-    this.getPrimaryKey = getPrimaryKey;
   }
 
   query(filter: string = ''): T[] {
@@ -69,11 +73,19 @@ class DatabaseType<T> {
       let values: T[] = [];
       this.realm.write(() => {
         for (const entry of entries) {
-          values.push(this.realm.create(this.name, entry, true));
+          if (entry.id === Database.UNSET_INDEX) {
+            const objects = this.realm.objects<T>(this.name);
+            const currentMaxId = objects.length !== 0 ? objects.sorted('id', true)[0].id : -1;
+            const newMaxId = currentMaxId + 1;
+            values.push(this.realm.create(this.name, { ...entry, id: newMaxId}, true));
+          } else {
+            values.push(this.realm.create(this.name, entry, true));
+          }
         }
       });
       return values;
-    } catch {
+    } catch (e) {
+      console.error(`Write error: ${e}`);
       return [];
     }
   }
@@ -86,11 +98,12 @@ class DatabaseType<T> {
     try {
       this.realm.write(() => {
         for (const entry of entries) {
-          this.realm.delete(this.realm.objectForPrimaryKey(this.name, this.getPrimaryKey(entry)));
+          this.realm.delete(this.realm.objectForPrimaryKey(this.name, entry.id));
         }
       });
       return true;
-    } catch {
+    } catch (e) {
+      console.error(`Delete error: ${e}`);
       return false;
     }
   }

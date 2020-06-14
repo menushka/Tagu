@@ -2,11 +2,11 @@ import * as React from 'react';
 import { Dialog, Classes, Button, FileInput, Label } from '@blueprintjs/core';
 
 import { connect } from 'react-redux';
-import { RootState, AppDispatch } from '../store/store';
+import { RootState, AppDispatch } from '../../store/store';
 
-import { closePreferences, writePreferencesFile } from '../actions/actions';
-import { showOpenDialog } from '../electron/fileDialog';
-import { IPreferences } from '../persistent/preferences';
+import { closePreferences, writePreferencesFile } from '../../actions/actions';
+import { showOpenDialog } from '../../electron/fileDialog';
+import { IPreferences } from '../../persistent/preferences';
 
 type PreferencesDialogState = {
   dataPath: string,

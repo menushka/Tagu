@@ -7,8 +7,8 @@ import { RootState, AppDispatch } from '../store/store';
 import { onDropFile, readPreferencesFile } from '../actions/actions';
 
 import Media from './Media';
-import NewFileDialog from './NewFileDialog';
-import PreferencesDialog from './PreferencesDialog';
+import NewFileDialog from './dialogs/NewFileDialog';
+import PreferencesDialog from './dialogs/PreferencesDialog';
 import LeftColumn from './LeftColumn';
 
 type MainProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;

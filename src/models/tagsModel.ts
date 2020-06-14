@@ -19,6 +19,11 @@ export class TagsModel {
     return ([] as Tag[]).concat(Database.instance.tags.query());
   }
 
+  updateTag(tag: Tag, tagName: string) {
+    tag.name = tagName;
+    Database.instance.tags.write(tag);
+  }
+
   removeTag(tag: Tag) {
     Database.instance.tags.delete(tag);
   }
