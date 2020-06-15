@@ -18,6 +18,8 @@ import {
   UPDATE_IMAGES_AND_TAGS,
   EDIT_TAG,
   EDIT_TAG_CANCEL,
+  EDIT_FILE,
+  EDIT_FILE_CANCEL,
 } from '../store/types';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
@@ -108,6 +110,8 @@ export const cancelNewFile = (): ActionTypes => ({
   type: CANCEL_ADD_FILE,
 });
 //#endregion
+
+//#region Edit files or tags
 export const openEditTag = (tag: Tag): AppThunk => async (dispatch) => {
   dispatch({
     type: EDIT_TAG,
@@ -125,7 +129,24 @@ export const updateEditTag = (tag: Tag, tagName: string): AppThunk => async (dis
   TagsModel.instance.updateTag(tag, tagName);
   dispatchUpdateFullUpdate(dispatch, getState);
 };
-//#region Edit tags
+
+export const openEditFile = (file: Image): AppThunk => async (dispatch) => {
+  dispatch({
+    type: EDIT_FILE,
+    file,
+  });
+};
+
+export const closeEditFile = (): AppThunk => async (dispatch) => {
+  dispatch({
+    type: EDIT_FILE_CANCEL,
+  });
+};
+
+export const updateEditFile = (file: Image, tags: Tag[]): AppThunk => async (dispatch, getState) => {
+  ImagesModel.instance.updateImage(file, tags);
+  dispatchUpdateFullUpdate(dispatch, getState);
+};
 //#endregion
 
 //#region File tree management

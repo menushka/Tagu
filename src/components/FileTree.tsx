@@ -6,9 +6,7 @@ import { RootState, AppDispatch } from '../store/store';
 
 import { Image } from '../data/image';
 import { Tag } from '../data/tag';
-import { selectFile, deleteFile, deleteTag, openEditTag } from '../actions/actions';
-
-type OwnProps = { byTag?: boolean };
+import { selectFile, deleteFile, deleteTag, openEditTag, openEditFile } from '../actions/actions';
 
 type FileTreeProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
@@ -54,13 +52,15 @@ class FileTree extends React.Component<FileTreeProps, {}> {
   }
 }
 
+type OwnProps = { byTag?: boolean };
+
 const MapStateToProps = (store: RootState, ownProps: OwnProps) => ({
   files: ownProps.byTag ? store.tag.files : store.search.files,
 });
 
 const MapDispatchToProps = (dispatch: AppDispatch, ownProps: OwnProps) => ({
   onSelect: (_nodeData: ITreeNode, nodePath: number[]) => dispatch(selectFile(ownProps.byTag ? 'tag' : 'search', nodePath)),
-  onEditImage: (_image: Image) => { console.log('Not yet implemented.'); },
+  onEditImage: (image: Image) => dispatch(openEditFile(image)),
   onDeleteImage: (image: Image) => dispatch(deleteFile(image)),
   onEditTag: (tag: Tag) => dispatch(openEditTag(tag)),
   onDeleteTag: (tag: Tag) => dispatch(deleteTag(tag)),

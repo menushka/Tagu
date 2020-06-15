@@ -41,6 +41,16 @@ export class ImagesModel {
     Database.instance.images.write(new Image(fileName, tags));
   }
 
+  updateImage(image: Image, tags: Tag[]) {
+    const writtenNewTags = Database.instance.tags.writeMultiple(tags.filter(tag => tag.id === Database.UNSET_INDEX));
+    for (const tag of writtenNewTags) {
+      tags.find(t => t.name === tag.name)!.id = tag.id;
+    }
+    image.tags = tags;
+
+    Database.instance.images.write(image);
+  }
+
   removeImage(image: Image, dataPath: string) {
     const imagePath = Image.getAbsolutePath(image, dataPath);
     Database.instance.images.delete(image);

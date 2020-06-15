@@ -6,32 +6,36 @@ import { connect } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 
 import { Tag } from '../data/tag';
-import { updateSearchTags, updateAddTags } from '../actions/actions';
 
-type OwnProps = { create?: boolean };
+type TagSearchState = {
+  selectedTags: Tag[],
+};
 
 type TagSearchProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
 const TagMultiSelect = MultiSelect.ofType<Tag>();
 
-class TagSearch extends React.Component<TagSearchProps, {}> {
+class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
   constructor(props: TagSearchProps) {
     super(props);
 
-    this.onSelect = this.onSelect.bind(this);
-    this.onRemove = this.onRemove.bind(this);
+    this.state = {
+      selectedTags: this.props.initialTags ?? [],
+    };
   }
 
-  onSelect(tag: Tag) {
-    const currentTags = this.props.selectedTags.map(x => x);
-    currentTags.push(tag);
-    this.props.updateTags(currentTags);
+  onSelect = (tag: Tag) => {
+    const tags = this.state.selectedTags;
+    tags.push(tag);
+    this.setState({ selectedTags: tags });
+    this.props.onChange(tags);
   }
 
-  onRemove(index: number) {
-    const currentTags = this.props.selectedTags.map(x => x);
-    currentTags.splice(index, 1);
-    this.props.updateTags(currentTags);
+  onRemove = (index: number) => {
+    const tags = this.state.selectedTags;
+    tags.splice(index, 1);
+    this.setState({ selectedTags: tags });
+    this.props.onChange(tags);
   }
 
   render() {
@@ -39,9 +43,9 @@ class TagSearch extends React.Component<TagSearchProps, {}> {
       <TagMultiSelect
         fill={true}
         items={this.props.tags}
-        itemPredicate={(query, tag) => !this.props.selectedTags.some(x => x.name === tag.name) && tag.name.includes(query)}
+        itemPredicate={(query, tag) => !this.state.selectedTags.some(x => x.name === tag.name) && tag.name.includes(query)}
         resetOnSelect={true}
-        selectedItems={this.props.selectedTags}
+        selectedItems={this.state.selectedTags}
         onItemSelect={this.onSelect}
         itemRenderer={(tag, { modifiers, handleClick }) => {
           return (
@@ -85,15 +89,20 @@ class TagSearch extends React.Component<TagSearchProps, {}> {
   }
 }
 
+type OwnProps = {
+  create?: boolean,
+  initialTags?: Tag[];
+  onChange: (tags: Tag[]) => void;
+};
+
 const MapStateToProps = (store: RootState, ownProps: OwnProps) => ({
-  create: ownProps.create,
+  create: ownProps.create ?? false,
+  initialTags: ownProps.initialTags,
+  onChange: ownProps.onChange,
   tags: store.allTags,
-  selectedTags: ownProps.create ? store.new.selectedTags : store.search.selectedTags,
 });
 
-const MapDispatchToProps = (dispatch: AppDispatch, ownProps: OwnProps) => ({
-  updateTags: (tags: Tag[]) => dispatch(ownProps.create ? updateAddTags(tags) : updateSearchTags(tags)),
-});
+const MapDispatchToProps = (_dispatch: AppDispatch) => ({});
 
 export default connect(
   MapStateToProps,

@@ -11,7 +11,7 @@ type MediaProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDisp
 class Media extends React.Component<MediaProps, {}> {
   render() {
     return ( this.props.image ?
-      (<img src={Image.getAbsolutePath(this.props.image!, this.props.dataPath)} style={{width: '100%', height: '100%', objectFit: 'contain'}} />)
+      (<img src={Image.getAbsolutePath(this.props.image!, this.props.dataPath)} style={this.props.style} />)
       :
       (<NonIdealState
         icon={'help'}
@@ -21,8 +21,14 @@ class Media extends React.Component<MediaProps, {}> {
   }
 }
 
-const MapStateToProps = (store: RootState) => ({
-  image: store.leftColumnId === 'search' ? store.search.selectedFile : store.tag.selectedFile,
+type OwnProps = {
+  image?: Image | null;
+  style?: React.CSSProperties;
+};
+
+const MapStateToProps = (store: RootState, ownProps: OwnProps) => ({
+  image: ownProps.image,
+  style: ownProps.style,
   dataPath: store.preferences.dataPath,
 });
 

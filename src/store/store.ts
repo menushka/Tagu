@@ -28,6 +28,9 @@ export interface RootState {
   editTag: {
     tag: Tag | null;
   };
+  editFile: {
+    file: Image | null;
+  };
   new: {
     droppedFile: string | null;
     selectedTags: Tag[];
@@ -65,6 +68,9 @@ export const initialState: RootState = {
   },
   editTag: {
     tag: null,
+  },
+  editFile: {
+    file: null,
   },
   new: {
     droppedFile: null,

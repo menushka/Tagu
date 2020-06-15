@@ -2,6 +2,7 @@ import { Tag } from '../data/tag';
 import { IPreferences } from '../persistent/preferences';
 import { ITreeNodeFile } from '../components/FileTree';
 import { RootState } from './store';
+import { Image } from '../data/image';
 
 export type RecursivePartial<T> = {
   [P in keyof T]?:
@@ -83,9 +84,11 @@ interface UpdateImagesAndTags {
 type NewFilesActionTypes = DropFile | UpdateAddTags | SaveNewFile | CancelAddFile | UpdateImagesAndTags;
 //#endregion
 
-//#region Edit tags
+//#region Edit files or tags
 export const EDIT_TAG = 'EDIT_TAG';
 export const EDIT_TAG_CANCEL = 'EDIT_TAG_CANCEL';
+export const EDIT_FILE = 'EDIT_FILE';
+export const EDIT_FILE_CANCEL = 'EDIT_FILE_CANCEL';
 
 interface EditTag {
   type: typeof EDIT_TAG;
@@ -96,7 +99,16 @@ interface EditTagCancel {
   type: typeof EDIT_TAG_CANCEL;
 }
 
-type EditTagActionTypes = EditTag | EditTagCancel;
+interface EditFile {
+  type: typeof EDIT_FILE;
+  file: Image;
+}
+
+interface EditFileCancel {
+  type: typeof EDIT_FILE_CANCEL;
+}
+
+type EditActionTypes = EditTag | EditTagCancel | EditFile | EditFileCancel;
 //#endregion
 
 //#region File tree management
@@ -128,4 +140,4 @@ interface UpdateSearchTags {
 type FileTreeActionTypes = SelectFile | DeleteFile | DeleteTag | UpdateSearchTags;
 //#endregion
 
-export type ActionTypes = PreferencesActionTypes | UIStateActionTypes | NewFilesActionTypes | EditTagActionTypes | FileTreeActionTypes;
+export type ActionTypes = PreferencesActionTypes | UIStateActionTypes | NewFilesActionTypes | EditActionTypes | FileTreeActionTypes;

@@ -56,11 +56,25 @@ class DatabaseType<T extends IndexedDatabaseEntry> {
   }
 
   query(filter: string = ''): T[] {
+    let objects = this.realm.objects<T>(this.name);
     if (filter != '') {
-      return this.realm.objects<T>(this.name).filtered(filter).map(x => JSON.parse(JSON.stringify(x)));
-    } else {
-      return this.realm.objects<T>(this.name).map(x => JSON.parse(JSON.stringify(x)));
+      objects = objects.filtered(filter);
     }
+
+    // Remove realm connection and convert RealmList to real array
+    const purgeRealm = (x: any) => {
+      const w = {};
+      for (const key of Object.keys(x)) {
+        if (x[key].constructor.name === 'List') {
+          w[key] = Object.keys(x[key]).map(k => purgeRealm(x[key][k]));
+        } else {
+          w[key] = x[key];
+        }
+      }
+      return w;
+    };
+
+    return objects.map(purgeRealm) as T[];
   }
 
   write(entry: T): T {

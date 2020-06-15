@@ -11,7 +11,7 @@ import TagSearch from './TagSearch';
 import FileTree from './FileTree';
 import { Tag } from '../data/tag';
 import { Image } from '../data/image';
-import { switchColumn } from '../actions/actions';
+import { switchColumn, updateSearchTags } from '../actions/actions';
 import { FileTreeHelper } from '../helpers/fileTreeHelper';
 
 type LeftColumnProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
@@ -19,16 +19,13 @@ type LeftColumnProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof Ma
 class LeftColumn extends React.Component<LeftColumnProps, {}> {
   constructor(props: LeftColumnProps) {
     super(props);
-
-    this.onSelectedTagsChange = this.onSelectedTagsChange.bind(this);
-    this.onSelectedImageChange = this.onSelectedImageChange.bind(this);
   }
 
-  onSelectedTagsChange(tags: Tag[]) {
+  onSelectedTagsChange = (tags: Tag[]) => {
     this.setState({ selectedTags: tags });
   }
 
-  onSelectedImageChange(image: Image | undefined) {
+  onSelectedImageChange = (image: Image | undefined) => {
     this.setState({ selectedImage: image });
   }
 
@@ -49,7 +46,7 @@ class LeftColumn extends React.Component<LeftColumnProps, {}> {
         <Tabs id='columnTabs' className='flex-column full-height' defaultSelectedTabId={this.props.columnId} onChange={this.props.onTabChange}>
           <Tab id='search' title='Search' panelClassName='flex-grow flex-column' panel={
             <div className='flex-column flex-grow'>
-              <TagSearch />
+              <TagSearch onChange={this.props.updateTags} />
               <div className='flex-grow'>
                 <FileTree />
               </div>
@@ -79,6 +76,7 @@ const MapStateToProps = (store: RootState) => ({
 
 const MapDispatchToProps = (dispatch: AppDispatch) => ({
   onTabChange: (id: SearchOrTag) => dispatch(switchColumn(id)),
+  updateTags: (tags: Tag[]) => dispatch(updateSearchTags(tags)),
 });
 
 export default connect(

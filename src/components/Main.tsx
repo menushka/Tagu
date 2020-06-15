@@ -11,6 +11,7 @@ import NewFileDialog from './dialogs/NewFileDialog';
 import PreferencesDialog from './dialogs/PreferencesDialog';
 import LeftColumn from './LeftColumn';
 import EditTagDialog from './dialogs/EditTagDialog';
+import EditFileDialog from './dialogs/EditFileDialog';
 
 type MainProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
@@ -28,12 +29,13 @@ class Main extends React.Component<MainProps, {}> {
           <div {...getRootProps()}>
           <input {...getInputProps()} />
           <NewFileDialog />
+          <EditFileDialog />
           <EditTagDialog />
           <PreferencesDialog />
           <SplitPane minSize={250} maxSize={-250}>
             <LeftColumn />
             <div style={{height: '100vh'}}>
-              <Media />
+              <Media image={this.props.selectedFile} style={{width: '100%', height: '100%', objectFit: 'contain'}} />
             </div>
           </SplitPane>
           </div>
@@ -43,7 +45,9 @@ class Main extends React.Component<MainProps, {}> {
   }
 }
 
-const MapStateToProps = (_store: RootState) => ({});
+const MapStateToProps = (store: RootState) => ({
+  selectedFile: store.leftColumnId === 'search' ? store.search.selectedFile : store.tag.selectedFile,
+});
 
 const MapDispatchToProps = (dispatch: AppDispatch) => ({
   readPreferences: () => dispatch(readPreferencesFile()),

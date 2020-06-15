@@ -7,7 +7,7 @@ import { RootState, AppDispatch } from '../../store/store';
 import TagSearch from '../TagSearch';
 
 import { Tag } from '../../data/tag';
-import { cancelNewFile, saveNewFile } from '../../actions/actions';
+import { cancelNewFile, saveNewFile, updateAddTags } from '../../actions/actions';
 
 type NewFileDialogProps = ReturnType<typeof MergeProps>;
 
@@ -23,7 +23,7 @@ class NewFileDialog extends React.Component<NewFileDialogProps, {}> {
           <img src={this.props.droppedFile!} style={{height: '30vh', width: '100%', objectFit: 'contain'}} />
         </div>
         <div className={Classes.DIALOG_FOOTER}>
-          <TagSearch create={true}/>
+          <TagSearch onChange={this.props.updateTags} create={true}/>
           <Button text='Add File' onClick={this.props.onAdd} icon='add' fill={true} style={{ marginTop: '10px' }}/>
         </div>
       </Dialog>
@@ -39,6 +39,7 @@ const MapStateToProps = (store: RootState) => ({
 
 const MapDispatchToProps = (dispatch: AppDispatch) => ({
   onAdd: (path: string, tags: Tag[]) => dispatch(saveNewFile(path, tags)),
+  updateTags: (tags: Tag[]) => dispatch(updateAddTags(tags)),
   onClose: () => dispatch(cancelNewFile()),
 });
 
