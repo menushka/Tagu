@@ -108,3 +108,4 @@ dist
 
 # Tagu specific
 .DS_Store
+/out/
