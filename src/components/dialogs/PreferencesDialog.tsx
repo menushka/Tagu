@@ -26,12 +26,15 @@ class PreferencesDialog extends React.Component<PreferencesDialogProps, Preferen
   onFileInputClick = (event: React.MouseEvent<HTMLLabelElement, MouseEvent>) => {
     event.preventDefault();
     event.stopPropagation();
-    showOpenDialog()
-      .then((data) => {
-        if (data?.length ?? 0 > 0) {
-          this.setState({ dataPath: data![0] });
-        }
-      });
+    showOpenDialog(
+      'Select Database',
+      'Select new or existing database.  Choosing an empty directory will create a database in that directory.',
+      'Create / Open',
+    ).then((data) => {
+      if (data?.length ?? 0 > 0) {
+        this.setState({ dataPath: data![0] });
+      }
+    });
   }
 
   onSave = (_event: React.MouseEvent<HTMLElement, MouseEvent>) => {

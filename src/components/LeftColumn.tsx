@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { Tabs, Tab, Button } from '@blueprintjs/core';
 
-import { remote } from 'electron';
-
 import { connect } from 'react-redux';
 import { SearchOrTag } from '../store/types';
 import { RootState, AppDispatch } from '../store/store';
@@ -11,19 +9,21 @@ import TagSearch from './TagSearch';
 import FileTree from './FileTree';
 import { Tag } from '../data/tag';
 import { switchColumn, updateSearchTags } from '../actions/actions';
+import { showOpenDialog } from '../electron/fileDialog';
 import { FileTreeHelper } from '../helpers/fileTreeHelper';
 
 type LeftColumnProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
 class LeftColumn extends React.Component<LeftColumnProps, {}> {
-  onExport() {
-    remote.dialog.showSaveDialog({
-      title: 'Choose export directory...',
-      properties: ['createDirectory', 'showOverwriteConfirmation'],
-    }).then((response: Electron.SaveDialogReturnValue) => {
-      if (response.canceled) { return; }
-
-        FileTreeHelper.exportTreeToPath(this.props.currentFileTree, response.filePath!);
+  onExport = () => {
+    showOpenDialog(
+      'Export',
+      'Select directory to export current file selection into.  Tags will be converted to folders.',
+      'Export',
+    ).then((data) => {
+      if (data?.length ?? 0 > 0) {
+        FileTreeHelper.exportTreeToPath(this.props.currentFileTree, this.props.dataPath, data![0]);
+      }
     });
   }
 
@@ -59,6 +59,7 @@ const MapStateToProps = (store: RootState) => ({
   allTags: store.allTags,
   searchTags: store.search.selectedTags,
   currentFileTree: store.leftColumnId === 'search' ? store.search.files : store.tag.files,
+  dataPath: store.preferences.dataPath,
 });
 
 const MapDispatchToProps = (dispatch: AppDispatch) => ({

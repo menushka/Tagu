@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import { File } from '../data/file';
 import { ITreeNodeFile } from '../components/FileTree';
 import { Tag } from '../data/tag';
@@ -41,8 +42,21 @@ export class FileTreeHelper {
     FileTreeHelper.forSpecificNode(nodes, path, x => x.isExpanded = !x.isExpanded);
   }
 
-  static exportTreeToPath(nodes: ITreeNodeFile[], path: string) {
-    console.log(nodes, path);
+  static exportTreeToPath(nodes: ITreeNodeFile[], dataPath: string, exportPath: string) {
+    for (const node of nodes) {
+      switch (node.type) {
+        case 'file':
+          const currentPath = File.getAbsolutePath(node.file!, dataPath);
+          const newPath = path.join(exportPath, node.file!.path);
+          fs.copyFile(currentPath, newPath);
+          break;
+        case 'folder':
+          const newExportPath = path.join(exportPath, node.tag!.name);
+          fs.mkdirSync(newExportPath);
+          this.exportTreeToPath(node.childNodes as ITreeNodeFile[], dataPath, newExportPath);
+          break;
+      }
+    }
   }
 
   private static transformToFiles(files: File[]): ITreeNodeFile[] {
