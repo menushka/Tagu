@@ -12,7 +12,7 @@ import {
   OPEN_PREFERENCES,
   CLOSE_PREFERENCES,
   READ_PREFERENCES_FILE,
-  UPDATE_IMAGES_AND_TAGS,
+  UPDATE_FILES_AND_TAGS,
   WRITE_PREFERENCES_FILE,
   EDIT_TAG,
   EDIT_TAG_CANCEL,
@@ -56,7 +56,7 @@ export default function rootReducer(
       return { ...state, editTag: { ...state.editTag, tag: action.tag } };
     case EDIT_TAG_CANCEL:
       return { ...state, editTag: { ...state.editTag, tag: null } };
-    case UPDATE_IMAGES_AND_TAGS:
+    case UPDATE_FILES_AND_TAGS:
       return mergeState(state, action.newState);
     case SWITCH_COLUMN:
       return { ...state, leftColumnId: action.id };

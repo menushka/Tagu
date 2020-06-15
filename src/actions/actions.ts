@@ -15,16 +15,16 @@ import {
   CLOSE_PREFERENCES,
   READ_PREFERENCES_FILE,
   WRITE_PREFERENCES_FILE,
-  UPDATE_IMAGES_AND_TAGS,
+  UPDATE_FILES_AND_TAGS,
   EDIT_TAG,
   EDIT_TAG_CANCEL,
   EDIT_FILE,
   EDIT_FILE_CANCEL,
 } from '../store/types';
 import { Tag } from '../data/tag';
-import { Image } from '../data/image';
+import { File } from '../data/file';
 import { IPreferences, Preferences } from '../persistent/preferences';
-import { ImagesModel } from '../models/imagesModel';
+import { FilesModel } from '../models/filesModel';
 import { AppThunk, RootState } from '../store/store';
 import { TagsModel } from '../models/tagsModel';
 import { FileTreeHelper } from '../helpers/fileTreeHelper';
@@ -35,7 +35,7 @@ function dispatchUpdateFullUpdate(dispatch: ThunkDispatch<RootState, unknown, Ac
   const searchFiles = FileTreeHelper.getFilteredFiles(getState().search.selectedTags);
   const tagFiles = FileTreeHelper.getFilesByTag();
   dispatch({
-    type: UPDATE_IMAGES_AND_TAGS,
+    type: UPDATE_FILES_AND_TAGS,
     newState: {
       allTags,
       search: {
@@ -99,7 +99,7 @@ export const updateAddTags = (addTags: Tag[]): AppThunk => async (dispatch) => {
 };
 
 export const saveNewFile = (path: string, tags: Tag[]): AppThunk => async (dispatch, getState) => {
-  ImagesModel.instance.addImage(path, tags, getState().preferences.dataPath);
+  FilesModel.instance.addFile(path, tags, getState().preferences.dataPath);
   dispatch({
     type: SAVE_NEW_FILE,
   });
@@ -130,7 +130,7 @@ export const updateEditTag = (tag: Tag, tagName: string): AppThunk => async (dis
   dispatchUpdateFullUpdate(dispatch, getState);
 };
 
-export const openEditFile = (file: Image): AppThunk => async (dispatch) => {
+export const openEditFile = (file: File): AppThunk => async (dispatch) => {
   dispatch({
     type: EDIT_FILE,
     file,
@@ -143,8 +143,8 @@ export const closeEditFile = (): AppThunk => async (dispatch) => {
   });
 };
 
-export const updateEditFile = (file: Image, tags: Tag[]): AppThunk => async (dispatch, getState) => {
-  ImagesModel.instance.updateImage(file, tags);
+export const updateEditFile = (file: File, tags: Tag[]): AppThunk => async (dispatch, getState) => {
+  FilesModel.instance.updateFile(file, tags);
   dispatchUpdateFullUpdate(dispatch, getState);
 };
 //#endregion
@@ -180,8 +180,8 @@ export const selectFile = (column: SearchOrTag, node: number[]): AppThunk => asy
   }
 };
 
-export const deleteFile = (file: Image): AppThunk => async (dispatch, getState) => {
-  ImagesModel.instance.removeImage(file, getState().preferences.dataPath);
+export const deleteFile = (file: File): AppThunk => async (dispatch, getState) => {
+  FilesModel.instance.removeFile(file, getState().preferences.dataPath);
   dispatch({
     type: DELETE_FILE,
   });

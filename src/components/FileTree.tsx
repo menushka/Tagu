@@ -4,7 +4,7 @@ import { ITreeNode, Tree, ContextMenu, Menu, MenuItem } from '@blueprintjs/core'
 import { connect } from 'react-redux';
 import { RootState, AppDispatch } from '../store/store';
 
-import { Image } from '../data/image';
+import { File } from '../data/file';
 import { Tag } from '../data/tag';
 import { selectFile, deleteFile, deleteTag, openEditTag, openEditFile } from '../actions/actions';
 
@@ -13,7 +13,7 @@ type FileTreeProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapD
 export interface ITreeNodeFile extends ITreeNode {
   id: string;
   type: 'file' | 'folder';
-  image?: Image;
+  file?: File;
   tag?: Tag;
 }
 
@@ -30,13 +30,13 @@ class FileTree extends React.Component<FileTreeProps, {}> {
 
           const treeNode = (node as ITreeNodeFile);
 
-          const editImage = () => { this.props.onEditImage(treeNode.image!); };
+          const editFile = () => { this.props.onEditFile(treeNode.file!); };
           const editTag = () => { this.props.onEditTag(treeNode.tag!); };
-          const onEdit = treeNode.type === 'file' ? editImage : editTag;
+          const onEdit = treeNode.type === 'file' ? editFile : editTag;
 
-          const deleteImage = () => { this.props.onDeleteImage(treeNode.image!); };
+          const deleteFile = () => { this.props.onDeleteFile(treeNode.file!); };
           const deleteTag = () => { this.props.onDeleteTag(treeNode.tag!); };
-          const onDelete = treeNode.type === 'file' ? deleteImage : deleteTag;
+          const onDelete = treeNode.type === 'file' ? deleteFile : deleteTag;
 
           const menu = React.createElement(
               Menu,
@@ -60,8 +60,8 @@ const MapStateToProps = (store: RootState, ownProps: OwnProps) => ({
 
 const MapDispatchToProps = (dispatch: AppDispatch, ownProps: OwnProps) => ({
   onSelect: (_nodeData: ITreeNode, nodePath: number[]) => dispatch(selectFile(ownProps.byTag ? 'tag' : 'search', nodePath)),
-  onEditImage: (image: Image) => dispatch(openEditFile(image)),
-  onDeleteImage: (image: Image) => dispatch(deleteFile(image)),
+  onEditFile: (file: File) => dispatch(openEditFile(file)),
+  onDeleteFile: (file: File) => dispatch(deleteFile(file)),
   onEditTag: (tag: Tag) => dispatch(openEditTag(tag)),
   onDeleteTag: (tag: Tag) => dispatch(deleteTag(tag)),
 });

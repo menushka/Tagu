@@ -4,7 +4,7 @@ import rootReducer from '../reducers/root';
 
 import { ITreeNodeFile } from '../components/FileTree';
 import { Tag } from '../data/tag';
-import { Image } from '../data/image';
+import { File } from '../data/file';
 
 import { SearchOrTag, ActionTypes } from './types';
 import { setupElectronReduxListeners } from '../electron/redux';
@@ -19,17 +19,17 @@ export interface RootState {
   search: {
     files: ITreeNodeFile[];
     selectedTags: Tag[];
-    selectedFile: Image | null;
+    selectedFile: File | null;
   };
   tag: {
     files: ITreeNodeFile[];
-    selectedFile: Image | null;
+    selectedFile: File | null;
   };
   editTag: {
     tag: Tag | null;
   };
   editFile: {
-    file: Image | null;
+    file: File | null;
   };
   new: {
     droppedFile: string | null;

@@ -1,6 +1,6 @@
 import * as Realm from 'realm';
 import * as path from 'path';
-import { Image } from '../data/image';
+import { File } from '../data/file';
 import { Tag } from '../data/tag';
 
 export class Database {
@@ -15,9 +15,9 @@ export class Database {
   public static UNSET_INDEX: number = -1;
 
   private realm: Realm;
-  private schemas: (Realm.ObjectSchema | Realm.ObjectClass)[] = [Image.schema, Tag.schema];
+  private schemas: (Realm.ObjectSchema | Realm.ObjectClass)[] = [File.schema, Tag.schema];
 
-  images: DatabaseType<Image> = new DatabaseType('Image', () => this.realm);
+  files: DatabaseType<File> = new DatabaseType('File', () => this.realm);
   tags: DatabaseType<Tag> = new DatabaseType('Tag', () => this.realm);
 
   init(dataPath: string) {

@@ -3,9 +3,9 @@ import * as path from 'path';
 import { Tag } from './tag';
 import { Database } from '../db/database';
 
-export class Image {
+export class File {
   static schema: Realm.ObjectSchema = {
-    name: 'Image',
+    name: 'File',
     primaryKey: 'id',
     properties: {
       id: 'int',
@@ -27,7 +27,7 @@ export class Image {
     this.tags = tags;
   }
 
-  static getAbsolutePath(image: Image, dataPath: string) {
-    return path.join(dataPath, 'images', image.path);
+  static getAbsolutePath(file: File, dataPath: string) {
+    return path.join(dataPath, 'files', file.path);
   }
 }

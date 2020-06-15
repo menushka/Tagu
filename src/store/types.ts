@@ -2,7 +2,7 @@ import { Tag } from '../data/tag';
 import { IPreferences } from '../persistent/preferences';
 import { ITreeNodeFile } from '../components/FileTree';
 import { RootState } from './store';
-import { Image } from '../data/image';
+import { File } from '../data/file';
 
 export type RecursivePartial<T> = {
   [P in keyof T]?:
@@ -56,7 +56,7 @@ export const DROP_FILE = 'DROP_FILE';
 export const UPDATE_ADD_TAGS = 'UPDATE_ADD_TAGS';
 export const SAVE_NEW_FILE = 'SAVE_NEW_FILE';
 export const CANCEL_ADD_FILE = 'CANCEL_ADD_FILE';
-export const UPDATE_IMAGES_AND_TAGS = 'UPDATE_IMAGES_AND_TAGS';
+export const UPDATE_FILES_AND_TAGS = 'UPDATE_FILES_AND_TAGS';
 
 interface DropFile {
   type: typeof DROP_FILE;
@@ -76,12 +76,12 @@ interface CancelAddFile {
   type: typeof CANCEL_ADD_FILE;
 }
 
-interface UpdateImagesAndTags {
-  type: typeof UPDATE_IMAGES_AND_TAGS;
+interface UpdateFilesAndTags {
+  type: typeof UPDATE_FILES_AND_TAGS;
   newState: RecursivePartial<RootState>;
 }
 
-type NewFilesActionTypes = DropFile | UpdateAddTags | SaveNewFile | CancelAddFile | UpdateImagesAndTags;
+type NewFilesActionTypes = DropFile | UpdateAddTags | SaveNewFile | CancelAddFile | UpdateFilesAndTags;
 //#endregion
 
 //#region Edit files or tags
@@ -101,7 +101,7 @@ interface EditTagCancel {
 
 interface EditFile {
   type: typeof EDIT_FILE;
-  file: Image;
+  file: File;
 }
 
 interface EditFileCancel {

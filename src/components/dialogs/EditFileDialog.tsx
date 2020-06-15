@@ -8,7 +8,7 @@ import TagSearch from '../TagSearch';
 
 import { Tag } from '../../data/tag';
 import { updateEditFile, closeEditFile } from '../../actions/actions';
-import { Image } from '../../data/image';
+import { File } from '../../data/file';
 import Media from '../Media';
 
 type EditFileDialogState = {
@@ -69,7 +69,7 @@ const MapStateToProps = (store: RootState) => ({
 });
 
 const MapDispatchToProps = (dispatch: AppDispatch) => ({
-  onSave: (file: Image, tags: Tag[]) => {
+  onSave: (file: File, tags: Tag[]) => {
     dispatch(updateEditFile(file, tags));
     dispatch(closeEditFile());
   },

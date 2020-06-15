@@ -1,20 +1,20 @@
 import * as path from 'path';
-import { Image } from '../data/image';
+import { File } from '../data/file';
 import { ITreeNodeFile } from '../components/FileTree';
 import { Tag } from '../data/tag';
 import { TagsModel } from '../models/tagsModel';
-import { ImagesModel } from '../models/imagesModel';
+import { FilesModel } from '../models/filesModel';
 
 export class FileTreeHelper {
   static getFilteredFiles(search: Tag[] = []): ITreeNodeFile[] {
-    return FileTreeHelper.transformToFiles(ImagesModel.instance.getImages(search));
+    return FileTreeHelper.transformToFiles(FilesModel.instance.getFiles(search));
   }
 
   static getFilesByTag(): ITreeNodeFile[] {
     const files: ITreeNodeFile[] = [];
     const tags = TagsModel.instance.getTags();
     for (const tag of tags) {
-      const tagFiles = FileTreeHelper.transformToFiles(ImagesModel.instance.getImages([tag]));
+      const tagFiles = FileTreeHelper.transformToFiles(FilesModel.instance.getFiles([tag]));
       files.push({
         id: `folder_${tag.name}`,
         label: tag.name,
@@ -26,7 +26,7 @@ export class FileTreeHelper {
     return files;
   }
 
-  static selectAtPath(nodes: ITreeNodeFile[], path: number[]): Image {
+  static selectAtPath(nodes: ITreeNodeFile[], path: number[]): File {
     const node = FileTreeHelper.forSpecificNode(nodes, path);
     if (node.type === 'file') {
       FileTreeHelper.forAllNode(nodes, x => x.isSelected = false);
@@ -34,7 +34,7 @@ export class FileTreeHelper {
     } else {
       node.isExpanded = !node.isExpanded;
     }
-    return node.image!;
+    return node.file!;
   }
 
   static toggleFolderAtPath(nodes: ITreeNodeFile[], path: number[]) {
@@ -45,13 +45,13 @@ export class FileTreeHelper {
     console.log(nodes, path);
   }
 
-  private static transformToFiles(images: Image[]): ITreeNodeFile[] {
-    return images.map(image => {
+  private static transformToFiles(files: File[]): ITreeNodeFile[] {
+    return files.map(file => {
       return {
-        id: `file_${image.path}`,
-        label: path.basename(image.path),
+        id: `file_${file.path}`,
+        label: path.basename(file.path),
         type: 'file',
-        image: image,
+        file: file,
       } as ITreeNodeFile;
     });
   }
