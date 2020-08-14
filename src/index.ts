@@ -42,6 +42,10 @@ const createWindow = async () => {
 
   setupElectronFileDialogListeners(mainWindow);
 
+  if (process.env.REACT_DEVTOOLS_PATH) {
+    BrowserWindow.addDevToolsExtension(process.env.REACT_DEVTOOLS_PATH);
+  }
+
   if (process.env.REDUX_DEVTOOLS_PATH) {
     BrowserWindow.addDevToolsExtension(process.env.REDUX_DEVTOOLS_PATH);
   }

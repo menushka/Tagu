@@ -1,7 +1,8 @@
-import * as Realm from 'realm';
+import * as Sqlite from 'better-sqlite3';
 import * as path from 'path';
-import { File } from '../data/file';
-import { Tag } from '../data/tag';
+import * as fs from 'fs-extra';
+import { FilesModel } from '../models/filesModel';
+import { TagsModel } from '../models/tagsModel';
 
 export class Database {
   private static _instance: Database;
@@ -14,17 +15,16 @@ export class Database {
 
   public static UNSET_INDEX: number = -1;
 
-  private realm: Realm;
-  private schemas: (Realm.ObjectSchema | Realm.ObjectClass)[] = [File.schema, Tag.schema];
-
-  files: DatabaseType<File> = new DatabaseType('File', () => this.realm);
-  tags: DatabaseType<Tag> = new DatabaseType('Tag', () => this.realm);
+  private db: Sqlite.Database;
 
   init(dataPath: string) {
-    this.realm = new Realm({
-      path: path.join(dataPath, 'data', 'data.realm'),
-      schema: this.schemas,
-    });
+    const dataFolder = path.join(dataPath, 'data');
+    const databaseFile = path.join(dataFolder, 'data.db');
+    fs.ensureDirSync(dataFolder);
+
+    this.db = new Sqlite(databaseFile);
+    TagsModel.initialize();
+    FilesModel.initialize();
   }
 
   switch(dataPath: string) {
@@ -33,92 +33,16 @@ export class Database {
   }
 
   close() {
-    this.realm.close();
-  }
-}
-
-interface IndexedDatabaseEntry {
-  id: number;
-}
-
-class DatabaseType<T extends IndexedDatabaseEntry> {
-
-  private name: string;
-  private getRealm: () => Realm;
-
-  private get realm() {
-    return this.getRealm();
+    this.db.close();
   }
 
-  constructor(name: string, getRealm: () => Realm) {
-    this.name = name;
-    this.getRealm = getRealm;
+  query<T>(query: string, ...params: any[]): T[] {
+    return this.db.prepare(query).all(...params);
   }
 
-  query(filter: string = ''): T[] {
-    let objects = this.realm.objects<T>(this.name);
-    if (filter != '') {
-      objects = objects.filtered(filter);
-    }
-
-    // Remove realm connection and convert RealmList to real array
-    const purgeRealm = (x: any) => {
-      const w = {};
-      for (const key of Object.keys(x)) {
-        if (x[key].constructor.name === 'List') {
-          w[key] = Object.keys(x[key]).map(k => purgeRealm(x[key][k]));
-        } else {
-          w[key] = x[key];
-        }
-      }
-      return w;
-    };
-
-    return objects.map(purgeRealm) as T[];
-  }
-
-  write(entry: T): T {
-    const value = this.writeMultiple([entry]);
-    return value[0];
-  }
-
-  writeMultiple(entries: T[]): T[] {
-    try {
-      let values: T[] = [];
-      this.realm.write(() => {
-        for (const entry of entries) {
-          if (entry.id === Database.UNSET_INDEX) {
-            const objects = this.realm.objects<T>(this.name);
-            const currentMaxId = objects.length !== 0 ? objects.sorted('id', true)[0].id : -1;
-            const newMaxId = currentMaxId + 1;
-            values.push(this.realm.create(this.name, { ...entry, id: newMaxId}, true));
-          } else {
-            values.push(this.realm.create(this.name, entry, true));
-          }
-        }
-      });
-      return values;
-    } catch (e) {
-      console.error(`Write error: ${e}`);
-      return [];
-    }
-  }
-
-  delete(entry: T): boolean {
-    return this.deleteMultiple([entry]);
-  }
-
-  deleteMultiple(entries: T[]): boolean {
-    try {
-      this.realm.write(() => {
-        for (const entry of entries) {
-          this.realm.delete(this.realm.objectForPrimaryKey(this.name, entry.id));
-        }
-      });
-      return true;
-    } catch (e) {
-      console.error(`Delete error: ${e}`);
-      return false;
-    }
+  run(callback: (db: Sqlite.Database) => void) {
+    this.db.transaction(() => {
+      callback(this.db);
+    })();
   }
 }

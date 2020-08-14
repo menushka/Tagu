@@ -21,7 +21,7 @@
     "quotemark": [true,
       "single",
       "avoid-escape"],
-    "semicolon": [true, "always"],
+    "semicolon": [true, "always", "strict-bound-class-methods"],
     "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
     "typedef-whitespace": [true, {
       "call-signature": "nospace",

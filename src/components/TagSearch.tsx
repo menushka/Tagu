@@ -25,18 +25,20 @@ class TagSearch extends React.Component<TagSearchProps, TagSearchState> {
   }
 
   onSelect = (tag: Tag) => {
+    if (tag.name.length <= 0) { return; }
+
     const tags = this.state.selectedTags;
     tags.push(tag);
     this.setState({ selectedTags: tags });
     this.props.onChange(tags);
-  }
+  };
 
   onRemove = (index: number) => {
     const tags = this.state.selectedTags;
     tags.splice(index, 1);
     this.setState({ selectedTags: tags });
     this.props.onChange(tags);
-  }
+  };
 
   render() {
     return (
