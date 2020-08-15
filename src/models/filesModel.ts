@@ -6,7 +6,7 @@ import { Database } from '../db/database';
 
 import { File } from '../data/file';
 import { Tag } from '../data/tag';
-import { Queries } from '../db/queries';
+import { Queries } from '../db/queries/queries';
 
 export class FilesModel {
   private static _instance: FilesModel;

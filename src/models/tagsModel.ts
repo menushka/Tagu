@@ -1,7 +1,7 @@
 import { Database } from '../db/database';
 
 import { Tag } from '../data/tag';
-import { Queries } from '../db/queries';
+import { Queries } from '../db/queries/queries';
 
 export class TagsModel {
 
