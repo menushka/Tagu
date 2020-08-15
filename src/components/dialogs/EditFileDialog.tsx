@@ -28,7 +28,7 @@ class EditFileDialog extends React.Component<EditFileDialogProps, EditFileDialog
 
   componentDidUpdate(prevProps: EditFileDialogProps) {
     if (this.props.isOpen && !prevProps.isOpen) {
-      this.setState({ selectedTags: this.props.file!.tags });
+      this.setState({ selectedTags: [...this.props.file!.tags] });
     } else if (!this.props.isOpen && prevProps.isOpen) {
       this.setState({ selectedTags: null });
     }
@@ -36,11 +36,11 @@ class EditFileDialog extends React.Component<EditFileDialogProps, EditFileDialog
 
   onSelectedTagsChange = (tags: Tag[]) => {
     this.setState({ selectedTags: tags });
-  }
+  };
 
   onSave = (_event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     this.props.onSave(this.state.selectedTags!);
-  }
+  };
 
   render() {
     return (

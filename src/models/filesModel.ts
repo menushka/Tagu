@@ -35,7 +35,7 @@ export class FilesModel {
     }
 
     const query = search.length === 0 ? Queries.file.get : Queries.file.getByTags(search.length);
-    const queryParams = search.length === 0 ? [] : [search.map(tag => tag.id)];
+    const queryParams = search.length === 0 ? [] : search.map(tag => tag.id.toString());
     const rows = Database.instance.query<SelectReturnType>(query, ...queryParams);
     return rows.map(row => new File(
       row.path,

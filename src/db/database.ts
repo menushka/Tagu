@@ -22,7 +22,7 @@ export class Database {
     const databaseFile = path.join(dataFolder, 'data.db');
     fs.ensureDirSync(dataFolder);
 
-    this.db = new Sqlite(databaseFile);
+    this.db = new Sqlite(databaseFile, {verbose: console.log});
     TagsModel.initialize();
     FilesModel.initialize();
   }

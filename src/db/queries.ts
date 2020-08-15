@@ -13,7 +13,7 @@ class FileQueries {
     (?)
   `;
 
-  private _get = (part1: string, part2: string) => `
+  get = `
     SELECT id, path, tags, tag_ids
     FROM files
     INNER JOIN
@@ -21,16 +21,15 @@ class FileQueries {
         SELECT file_id, group_concat(tags.name) as tags, group_concat(tags.id) as tag_ids FROM file_tags
         LEFT JOIN tags
         on file_tags.tag_id = tags.id
-        ${part1}
         GROUP BY file_id
-        ${part2}
       ) AS combined_tags
     ON files.id = combined_tags.file_id
   `;
 
-  get = this._get('', '');
-
-  getByTags = (num: number) => this._get(`WHERE tag_id IN (${Queries.buildBinds(num)})`, `HAVING COUNT(*) = ${num}`);
+  getByTags = (num: number) => `
+    ${this.get}
+    WHERE ${Queries.buildWhereBinds(num, 'tag_ids')}
+  `;
 
   deleteById = `
     DELETE FROM files
@@ -105,4 +104,5 @@ export class Queries {
   static tags = new TagQueries();
 
   static buildBinds = (num: number) => new Array(num).fill('?').join(',');
+  static buildWhereBinds = (num: number, column: string) => new Array(num).fill(column + ' LIKE \'%\' || ? || \'%\'').join(' AND ');
 }
