@@ -30,11 +30,11 @@ class EditTagDialog extends React.Component<EditTagProps, EditTagState> {
 
   onTagNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ tagName: event.target.value });
-  }
+  };
 
   onSave = (_event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     this.props.onSave(this.state.tagName);
-  }
+  };
 
   render() {
     return (

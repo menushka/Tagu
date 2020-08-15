@@ -35,13 +35,13 @@ class PreferencesDialog extends React.Component<PreferencesDialogProps, Preferen
         this.setState({ dataPath: data![0] });
       }
     });
-  }
+  };
 
   onSave = (_event: React.MouseEvent<HTMLElement, MouseEvent>) => {
     this.props.onSave({
       dataPath: this.state.dataPath,
     });
-  }
+  };
 
   render() {
     return (

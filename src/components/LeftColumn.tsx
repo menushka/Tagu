@@ -25,7 +25,7 @@ class LeftColumn extends React.Component<LeftColumnProps, {}> {
         FileTreeHelper.exportTreeToPath(this.props.currentFileTree, this.props.dataPath, data![0]);
       }
     });
-  }
+  };
 
   render() {
     return (
