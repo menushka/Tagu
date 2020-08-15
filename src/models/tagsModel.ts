@@ -2,6 +2,7 @@ import { Database } from '../db/database';
 
 import { Tag } from '../data/tag';
 import { Queries } from '../db/queries/queries';
+import { Statements } from '../db/statements';
 
 export class TagsModel {
 
@@ -36,13 +37,13 @@ export class TagsModel {
 
   updateTag(tag: Tag, tagName: string) {
     Database.instance.run((db) => {
-      db.prepare(Queries.tags.updateByNameAndId).run(tagName, tag.id);
+      Statements.tags.updateByNameAndId(db, tagName, tag.id);
     });
   }
 
   removeTag(tag: Tag) {
     Database.instance.run((db) => {
-      db.prepare(Queries.tags.removeById).run(tag.id);
+      Statements.tags.removeById(db, tag.id);
     });
   }
 }

@@ -7,6 +7,7 @@ import { Database } from '../db/database';
 import { File } from '../data/file';
 import { Tag } from '../data/tag';
 import { Queries } from '../db/queries/queries';
+import { Statements } from '../db/statements';
 
 export class FilesModel {
   private static _instance: FilesModel;
@@ -51,21 +52,14 @@ export class FilesModel {
     fs.copySync(addFilePath, newFilePath);
 
     Database.instance.run((db) => {
-      const createTagStatement = db.prepare(Queries.tags.create);
+      const existingTags = tags.filter(tag => tag.id !== Database.UNSET_INDEX);
       const unwrittenTags = tags.filter(tag => tag.id === Database.UNSET_INDEX);
-      for (const tag of unwrittenTags) {
-        const result = createTagStatement.run(tag.name);
-        tag.id = parseInt(`${result.lastInsertRowid}`);
-      }
 
-      const createFileStatement = db.prepare(Queries.file.create);
-      const fileResult = createFileStatement.run(fileName);
-      const fileId = parseInt(`${fileResult.lastInsertRowid}`);
+      const newTags = Statements.tags.create(db, unwrittenTags);
+      const finalTags = existingTags.concat(newTags);
 
-      const createFileTagsStatement = db.prepare(Queries.fileTags.create);
-      for (const tag of tags) {
-        createFileTagsStatement.run(fileId, tag.id);
-      }
+      const fileId = Statements.files.create(db, fileName);
+      Statements.fileTags.create(db, fileId, finalTags);
     });
   }
 
@@ -76,19 +70,15 @@ export class FilesModel {
     const tagsToRemove = difference(currentTags, newTags);
 
     Database.instance.run((db) => {
-      db.prepare(Queries.fileTags.deleteByIds(tagsToRemove.length)).run(...tagsToRemove.map(tag => tag.id));
-
-      const createFileTagsStatement = db.prepare(Queries.fileTags.create);
-      for (const tag of tagsToAdd) {
-        createFileTagsStatement.run(file.id, tag.name);
-      }
+      Statements.fileTags.deleteByIds(db, tagsToRemove.map(tag => tag.id));
+      Statements.fileTags.create(db, file.id, tagsToAdd);
     });
   }
 
   removeFile(file: File, dataPath: string) {
     Database.instance.run((db) => {
-      db.prepare(Queries.fileTags.deleteByFileId).run(file.id);
-      db.prepare(Queries.file.deleteById).run(file.id);
+      Statements.fileTags.deleteByFileId(db, file.id);
+      Statements.files.deleteById(db, file.id);
     });
     const filePath = File.getAbsolutePath(file, dataPath);
     fs.removeSync(filePath);
