@@ -1,21 +1,22 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-import { app, BrowserWindow, Menu } from 'electron';
-import { enableLiveReload } from 'electron-compile';
+import * as path from 'path';
+import * as url from 'url';
+import { app, BrowserWindow } from 'electron';
+// import { enableLiveReload } from 'electron-compile';
 
-import { template } from './menu';
-import { setupElectronFileDialogListeners } from './electron/fileDialog';
+// import { template } from '../menu';
+// import { setupElectronFileDialogListeners } from '../electron/fileDialog';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null = null;
 
-const isDevMode = process.execPath.match(/[\\/]electron/);
-
-if (isDevMode) {
-  enableLiveReload({strategy: 'react-hmr'});
-}
+// const isDevMode = process.execPath.match(/[\\/]electron/);
+// if (isDevMode) {
+//   enableLiveReload({strategy: 'react-hmr'});
+// }
 
 const createWindow = async () => {
   // Create the browser window.
@@ -27,7 +28,13 @@ const createWindow = async () => {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadURL(
+    url.format({
+        pathname: path.join(__dirname, './index.html'),
+        protocol: 'file:',
+        slashes: true,
+    }),
+  );
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -37,10 +44,10 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
-  const menu = Menu.buildFromTemplate(template(mainWindow));
-  Menu.setApplicationMenu(menu);
+  // const menu = Menu.buildFromTemplate(template(mainWindow));
+  // Menu.setApplicationMenu(menu);
 
-  setupElectronFileDialogListeners(mainWindow);
+  // setupElectronFileDialogListeners(mainWindow);
 
   if (process.env.REACT_DEVTOOLS_PATH) {
     BrowserWindow.addDevToolsExtension(process.env.REACT_DEVTOOLS_PATH);

@@ -1,13 +1,10 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import store from './store/store';
 import Main from './components/Main';
 
-type AppProps = {};
-
-type AppState = {};
-
-export class App extends React.Component<AppProps, AppState> {
+class App extends React.Component {
   render() {
     return (
       <Provider store={store}>
@@ -16,3 +13,8 @@ export class App extends React.Component<AppProps, AppState> {
     );
   }
 }
+
+ReactDOM.render(
+  <App />,
+  document.getElementById('app'),
+);

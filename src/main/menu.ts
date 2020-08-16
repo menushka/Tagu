@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from 'electron';
-import { dispatchFromElectron } from './electron/redux';
-import { openPreferences } from './actions/actions';
+import { dispatchFromElectron } from '../renderer/electron/redux';
+import { openPreferences } from '.../renderer/actions/actions';
 
 export function template(win: BrowserWindow): Electron.MenuItemConstructorOptions[] {
   return ([
