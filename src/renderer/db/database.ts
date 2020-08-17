@@ -1,4 +1,4 @@
-// import * as Sqlite from 'better-sqlite3';
+import * as Sqlite from 'better-sqlite3';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { FilesModel } from '../models/filesModel';
@@ -15,14 +15,14 @@ export class Database {
 
   public static UNSET_INDEX: number = -1;
 
-  private db: any;
+  private db: Sqlite.Database;
 
   init(dataPath: string) {
     const dataFolder = path.join(dataPath, 'data');
     const databaseFile = path.join(dataFolder, 'data.db');
     fs.ensureDirSync(dataFolder);
 
-    // this.db = new Sqlite(databaseFile);
+    this.db = new Sqlite(databaseFile);
     TagsModel.initialize();
     FilesModel.initialize();
   }
@@ -40,7 +40,7 @@ export class Database {
     return this.db.prepare(query).all(...params);
   }
 
-  run(callback: (db: any) => void) {
+  run(callback: (db: Sqlite.Database) => void) {
     this.db.transaction(() => {
       callback(this.db);
     })();

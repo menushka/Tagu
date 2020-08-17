@@ -5,7 +5,7 @@ import { ActionTypes } from '../store/types';
 const ELECTRON_EVENT = 'ELECTRON_EVENT';
 
 export function setupElectronReduxListeners(dispatch: Dispatch<ActionTypes>) {
-  ipcRenderer.on(ELECTRON_EVENT, (_event, data: ActionTypes) => {
+  ipcRenderer.on(ELECTRON_EVENT, (_event: any, data: ActionTypes) => {
     dispatch(data);
   });
 }

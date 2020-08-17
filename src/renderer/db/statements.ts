@@ -1,10 +1,10 @@
-// import * as Sqlite from 'better-sqlite3';
+import * as Sqlite from 'better-sqlite3';
 
 import { Queries } from './queries/queries';
 
 import { Tag } from '../data/tag';
 
-type Database = any;
+type Database = Sqlite.Database;
 const Integer = Math.trunc;
 
 class FileStatements {

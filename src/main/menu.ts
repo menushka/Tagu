@@ -1,11 +1,11 @@
 import { app, BrowserWindow } from 'electron';
 import { dispatchFromElectron } from '../renderer/electron/redux';
-import { openPreferences } from '.../renderer/actions/actions';
+import { openPreferences } from '../renderer/actions/preferences/preferencesActions';
 
 export function template(win: BrowserWindow): Electron.MenuItemConstructorOptions[] {
   return ([
     {
-      label: app.name,
+      label: app.getName(),
       submenu: [
         { role: 'about' },
         { type: 'separator' },

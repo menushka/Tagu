@@ -10,7 +10,7 @@ interface ShowDialogOptions {
 }
 
 export function setupElectronFileDialogListeners(win: BrowserWindow) {
-  ipcMain.on(ELECTRON_FILE_DIALOG_EVENT, (_event, data: ShowDialogOptions) => {
+  ipcMain.on(ELECTRON_FILE_DIALOG_EVENT, (_event: any, data: ShowDialogOptions) => {
     const result = dialog.showOpenDialog(win, {
       title: data.title,
       message: data.message,
@@ -23,7 +23,7 @@ export function setupElectronFileDialogListeners(win: BrowserWindow) {
 
 export function showOpenDialog(title?: string, message?: string, buttonLabel?: string): Promise<ShowDialogReturnType> {
   return new Promise((resolve) => {
-      ipcRenderer.once(ELECTRON_FILE_DIALOG_EVENT, (_event, data: ShowDialogReturnType) => {
+      ipcRenderer.once(ELECTRON_FILE_DIALOG_EVENT, (_event: any, data: ShowDialogReturnType) => {
         resolve(data);
       });
       ipcRenderer.send(ELECTRON_FILE_DIALOG_EVENT, { title, message, buttonLabel } as ShowDialogOptions);

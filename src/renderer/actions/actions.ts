@@ -1,4 +1,3 @@
-import { ThunkDispatch } from 'redux-thunk';
 import {
   ActionTypes,
   SearchOrTag,
@@ -11,11 +10,6 @@ import {
   SWITCH_COLUMN,
   UPDATE_ADD_TAGS,
   DELETE_TAG,
-  OPEN_PREFERENCES,
-  CLOSE_PREFERENCES,
-  READ_PREFERENCES_FILE,
-  WRITE_PREFERENCES_FILE,
-  UPDATE_FILES_AND_TAGS,
   EDIT_TAG,
   EDIT_TAG_CANCEL,
   EDIT_FILE,
@@ -23,65 +17,19 @@ import {
 } from '../store/types';
 import { Tag } from '../data/tag';
 import { File } from '../data/file';
-import { IPreferences, Preferences } from '../persistent/preferences';
 import { FilesModel } from '../models/filesModel';
-import { AppThunk, RootState } from '../store/store';
+import { AppThunk } from '../store/store';
 import { TagsModel } from '../models/tagsModel';
 import { FileTreeHelper } from '../helpers/fileTreeHelper';
-import { Database } from '../db/database';
+import { dispatchUpdateFullUpdate } from './utils/actionUtils';
 
-function dispatchUpdateFullUpdate(dispatch: ThunkDispatch<RootState, unknown, ActionTypes>, getState: () => RootState) {
-  const allTags = TagsModel.instance.getTags();
-  const searchFiles = FileTreeHelper.getFilteredFiles(getState().search.selectedTags);
-  const tagFiles = FileTreeHelper.getFilesByTag();
-  dispatch({
-    type: UPDATE_FILES_AND_TAGS,
-    newState: {
-      allTags,
-      search: {
-        files: searchFiles,
-      },
-      tag: {
-        files: tagFiles,
-      },
-    },
-  });
-}
-
-//#region Preferences IO handling
-export const readPreferencesFile = (): AppThunk => async (dispatch, getState) => {
-  const preferences = Preferences.read();
-  Database.instance.init(preferences.dataPath);
-  dispatch({
-    type: READ_PREFERENCES_FILE,
-    preferences,
-  });
-  dispatchUpdateFullUpdate(dispatch, getState);
-};
-
-export const writePreferencesFile = (preferences: IPreferences): AppThunk => async (dispatch, getState) => {
-  Preferences.write(preferences);
-  Database.instance.switch(preferences.dataPath);
-  dispatch({
-    type: WRITE_PREFERENCES_FILE,
-    preferences,
-  });
-  dispatchUpdateFullUpdate(dispatch, getState);
-};
-//#endregion
+export { readPreferencesFile, writePreferencesFile } from './preferences/preferencesActionCreators';
+export { closePreferences, openPreferences } from './preferences/preferencesActions';
 
 //#region UI State handling
 export const switchColumn = (id: SearchOrTag): ActionTypes => ({
   type: SWITCH_COLUMN,
   id,
-});
-
-export const openPreferences = (): ActionTypes => ({
-  type: OPEN_PREFERENCES,
-});
-
-export const closePreferences = (): ActionTypes => ({
-  type: CLOSE_PREFERENCES,
 });
 //#endregion
 

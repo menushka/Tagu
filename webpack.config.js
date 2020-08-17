@@ -46,6 +46,10 @@ const commonConfig = {
           name: '[path][name].[ext]',
         },
       },
+      {
+        test: /\.node$/,
+        use: 'node-loader',
+      },
     ],
   },
 };
@@ -75,11 +79,10 @@ rendererConfig.externals = {
 };
 rendererConfig.plugins = [
   new CopyPlugin({
-      patterns: [
-        { from: './node_modules/better-sqlite3', to: './node_modules/better-sqlite3/' },
-        { from: './public/css', to: './css/' },
-      ],
-    }),
+    patterns: [
+      { from: './public/css', to: './css/' },
+    ],
+  }),
   new HtmlWebpackPlugin({
     template: path.resolve(__dirname, './public/index.html'),
   }),
