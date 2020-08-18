@@ -1,5 +1,3 @@
-import { QueryUtils } from '../utils/queryUtils';
-
 export class FileTagsQueries {
   initalize = `
     CREATE TABLE IF NOT EXISTS file_tags (
@@ -18,13 +16,18 @@ export class FileTagsQueries {
     (?, ?)
   `;
 
-  deleteByIds = (num: number) => `
-    DELETE FROM file_tags
-    WHERE id IN (${QueryUtils.buildBinds(num)})
-  `;
-
   deleteByFileId = `
     DELETE FROM file_tags
     WHERE file_id = ?
+  `;
+
+  deleteByTagId = `
+    DELETE FROM file_tags
+    WHERE tag_id = ?
+  `;
+
+  deleteByFileIdAndTagId = `
+    DELETE FROM file_tags
+    WHERE file_id = ? AND tag_id = ?
   `;
 }

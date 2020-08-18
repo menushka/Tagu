@@ -43,6 +43,7 @@ export class TagsModel {
 
   removeTag(tag: Tag) {
     Database.instance.run((db) => {
+      Statements.fileTags.deleteByTagId(db, tag.id);
       Statements.tags.removeById(db, tag.id);
     });
   }

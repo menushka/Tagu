@@ -1,5 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as Sqlite from 'better-sqlite3';
 import { zip, difference } from 'lodash';
 
 import { Database } from '../db/database';
@@ -52,12 +53,7 @@ export class FilesModel {
     fs.copySync(addFilePath, newFilePath);
 
     Database.instance.run((db) => {
-      const existingTags = tags.filter(tag => tag.id !== Database.UNSET_INDEX);
-      const unwrittenTags = tags.filter(tag => tag.id === Database.UNSET_INDEX);
-
-      const newTags = Statements.tags.create(db, unwrittenTags);
-      const finalTags = existingTags.concat(newTags);
-
+      const finalTags = this.createNeededTags(db, tags);
       const fileId = Statements.files.create(db, fileName);
       Statements.fileTags.create(db, fileId, finalTags);
     });
@@ -70,8 +66,10 @@ export class FilesModel {
     const tagsToRemove = difference(currentTags, newTags);
 
     Database.instance.run((db) => {
-      Statements.fileTags.deleteByIds(db, tagsToRemove.map(tag => tag.id));
-      Statements.fileTags.create(db, file.id, tagsToAdd);
+      Statements.fileTags.deleteByFileIdAndTagId(db, file.id, tagsToRemove.map(tag => tag.id));
+
+      const finalTags = this.createNeededTags(db, tagsToAdd);
+      Statements.fileTags.create(db, file.id, finalTags);
     });
   }
 
@@ -82,5 +80,14 @@ export class FilesModel {
     });
     const filePath = File.getAbsolutePath(file, dataPath);
     fs.removeSync(filePath);
+  }
+
+  private createNeededTags(db: Sqlite.Database, tags: Tag[]) {
+    const existingTags = tags.filter(tag => tag.id !== Database.UNSET_INDEX);
+      const unwrittenTags = tags.filter(tag => tag.id === Database.UNSET_INDEX);
+
+      const newTags = Statements.tags.create(db, unwrittenTags);
+      const finalTags = existingTags.concat(newTags);
+      return finalTags;
   }
 }

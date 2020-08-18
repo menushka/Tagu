@@ -5,7 +5,7 @@ import { Queries } from './queries/queries';
 import { Tag } from '../data/tag';
 
 type Database = Sqlite.Database;
-const Integer = Math.trunc;
+const Integer = Sqlite.Integer;
 
 class FileStatements {
   create(db: Database, name: string): number {
@@ -23,16 +23,22 @@ class FileTagStatements {
   create(db: Database, fileId: number, tags: Tag[]) {
     const createFileTagsStatement = db.prepare(Queries.fileTags.create);
     for (const tag of tags) {
-      createFileTagsStatement.run(fileId, Integer(tag.id));
+      createFileTagsStatement.run(Integer(fileId), Integer(tag.id));
     }
-  }
-
-  deleteByIds(db: Database, ids: number[]) {
-    db.prepare(Queries.fileTags.deleteByIds(ids.length)).run(...ids.map(id => Integer(id)));
   }
 
   deleteByFileId(db: Database, id: number) {
     db.prepare(Queries.fileTags.deleteByFileId).run(Integer(id));
+  }
+
+  deleteByTagId(db: Database, id: number) {
+    db.prepare(Queries.fileTags.deleteByTagId).run(Integer(id));
+  }
+
+  deleteByFileIdAndTagId(db: Database, fileId: number, tagIds: number[]) {
+    for (const tagId of tagIds) {
+      db.prepare(Queries.fileTags.deleteByFileIdAndTagId).run(Integer(fileId), Integer(tagId));
+    }
   }
 }
 
