@@ -9,25 +9,24 @@
     "dev": "rimraf dist && cross-env NODE_ENV=development webpack --watch --progress --colors",
     "prod": "rimraf dist && cross-env NODE_ENV=production webpack --progress --colors",
     "test": "mocha -r ts-node/register -r tsconfig-paths/register \"test/**/*.ts\"",
-    "build:win": "electron-builder build --win --x64",
-    "build:mac": "electron-builder build --mac --x64",
+    "build": "electron-builder build --mac --x64",
     "rebuild-sqlite": "./node_modules/.bin/electron-rebuild -f -w better-sqlite3"
   },
   "build": {
     "appId": "ca.menushka.tagu",
     "productName": "Tagu",
+    "copyright": "Copyright © 2020 Menushka Weeratunga",
     "directories": {
       "app": "./dist/",
       "output": "./out/"
     },
     "mac": {
-      "target": "pkg"
+      "category": "public.app-category.productivity",
+      "target": "dmg",
+      "icon": "res/tagu.icns"
     },
-    "win": {
-      "target": "nsis",
-      "asar": false
-    },
-    "buildVersion": "1.0.0"
+    "dmg": {},
+    "buildVersion": "${version}"
   },
   "author": "Menushka Weeratunga <contact@menushka.ca>",
   "license": "MIT",
@@ -72,8 +71,8 @@
     "copy-webpack-plugin": "^6.0.3",
     "cross-env": "^5.2.1",
     "css-loader": "^1.0.1",
-    "electron": "^3.1.13",
-    "electron-builder": "^20.44.4",
+    "electron": "^9.2.0",
+    "electron-builder": "^22.8.0",
     "electron-rebuild": "^1.11.0",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.1",
@@ -87,6 +86,8 @@
     "mocha": "^5.2.0",
     "node-loader": "^1.0.1",
     "rimraf": "^2.7.1",
+    "sass": "^1.26.10",
+    "sass-loader": "^9.0.3",
     "source-map-loader": "^0.2.4",
     "spectron": "^5.0.0",
     "style-loader": "^0.23.1",
@@ -96,7 +97,7 @@
     "tslint": "^5.20.1",
     "tslint-microsoft-contrib": "^5.2.1",
     "typescript": "^3.7.2",
-    "webpack": "^4.41.2",
+    "webpack": "^4.44.1",
     "webpack-cli": "^3.3.10"
   }
 }

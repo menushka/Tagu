@@ -25,6 +25,9 @@ const createWindow = async () => {
     height: 600,
     minWidth: 650,
     minHeight: 500,
+    webPreferences: {
+      nodeIntegration: true,
+    },
   });
 
   // and load the index.html of the app.
@@ -79,6 +82,10 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+// Temporary fixes for upgrade to Electron 9
+// https://github.com/electron/electron/issues/18397
+app.allowRendererProcessReuse = false;
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
