@@ -1,3 +1,30 @@
+// Overrides for BlueprintJS
+.bp3-tab {
+  margin-right: 0px !important;
+  width: 50% !important;
+  text-align: center !important;
+}
+
+.bp3-tab-panel {
+  margin-top: 0px !important;
+}
+
+.bp3-tree {
+  flex-grow: 1;
+}
+
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+input, button, textarea, :focus {
+    outline: none;
+}
+
+// Overrides for Resizer
 .Resizer {
   background: #000;
   opacity: 0.2;
@@ -44,3 +71,4 @@
 .Resizer.disabled:hover {
   border-color: transparent;
 }
+

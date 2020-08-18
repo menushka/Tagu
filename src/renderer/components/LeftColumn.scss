@@ -1,0 +1,30 @@
+.left-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &-tab {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    &-contents {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+  }
+}
+
+.full-height {
+  height: 100%;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}

@@ -13,6 +13,12 @@ import LeftColumn from './LeftColumn';
 import EditTagDialog from './dialogs/EditTagDialog';
 import EditFileDialog from './dialogs/EditFileDialog';
 
+import '../../../node_modules/normalize.css/normalize.css';
+import '../../../node_modules/@blueprintjs/core/lib/css/blueprint.css';
+import '../../../node_modules/@blueprintjs/icons/lib/css/blueprint-icons.css';
+
+import './Main.scss';
+
 type MainProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
 class Main extends React.Component<MainProps, {}> {

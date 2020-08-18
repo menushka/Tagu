@@ -12,6 +12,8 @@ import { switchColumn, updateSearchTags } from '../actions/actions';
 import { showOpenDialog } from '../electron/fileDialog';
 import { FileTreeHelper } from '../helpers/fileTreeHelper';
 
+import './LeftColumn.scss';
+
 type LeftColumnProps = ReturnType<typeof MapStateToProps> & ReturnType<typeof MapDispatchToProps>;
 
 class LeftColumn extends React.Component<LeftColumnProps, {}> {
@@ -30,21 +32,17 @@ class LeftColumn extends React.Component<LeftColumnProps, {}> {
   render() {
     return (
       <div style={{height: '100vh'}}>
-        <Tabs id='columnTabs' className='flex-column full-height' defaultSelectedTabId={this.props.columnId} onChange={this.props.onTabChange}>
-          <Tab id='search' title='Search' panelClassName='flex-grow flex-column' panel={
-            <div className='flex-column flex-grow'>
+        <Tabs id='columnTabs' className='left-column' defaultSelectedTabId={this.props.columnId} onChange={this.props.onTabChange}>
+          <Tab id='search' title='Search' panelClassName='left-column-tab' panel={
+            <div className='left-column-tab-contents'>
               <TagSearch onChange={this.props.updateTags} />
-              <div className='flex-grow'>
-                <FileTree />
-              </div>
+              <FileTree />
               <Button text='Export' icon='export' fill={true} onClick={this.onExport}/>
             </div>
           } />
-          <Tab id='tag' title='By Tag' panelClassName='flex-grow flex-column' panel={
-            <div className='flex-column flex-grow'>
-              <div className='flex-grow'>
-                <FileTree byTag/>
-              </div>
+          <Tab id='tag' title='By Tag' panelClassName='left-column-tab' panel={
+            <div className='left-column-tab-contents'>
+              <FileTree byTag/>
               <Button text='Export' icon='export' fill={true} onClick={this.onExport}/>
             </div>
           } />

@@ -1,6 +1,6 @@
 const lodash = require('lodash');
-const CopyPlugin = require('copy-webpack-plugin');
 const CopyPkgJsonPlugin = require('copy-pkg-json-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
@@ -37,14 +37,30 @@ const commonConfig = {
       },
       {
         test: /\.(scss|css)$/,
-        use: ['style-loader', 'css-loader'],
+        use: [
+          MiniCssExtractPlugin.loader,
+          // { loader: 'style-loader' }, // Creates `style` nodes from JS strings
+          {
+            loader: 'css-loader',
+            options: {
+              modules: 'global',
+              importLoaders: 2
+            }
+          }, // Translates CSS into CommonJS
+          { loader: 'sass-loader' }, // Compiles Sass to CSS
+        ],
       },
       {
-        test: /\.(jpg|png|svg|ico|icns)$/,
-        loader: 'file-loader',
-        options: {
-          name: '[path][name].[ext]',
-        },
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'fonts/'
+            }
+          }
+        ]
       },
       {
         test: /\.node$/,
@@ -78,11 +94,7 @@ rendererConfig.externals = {
   'better-sqlite3': 'commonjs2 better-sqlite3',
 };
 rendererConfig.plugins = [
-  new CopyPlugin({
-    patterns: [
-      { from: './public/css', to: './css/' },
-    ],
-  }),
+  new MiniCssExtractPlugin(),
   new HtmlWebpackPlugin({
     template: path.resolve(__dirname, './public/index.html'),
   }),
