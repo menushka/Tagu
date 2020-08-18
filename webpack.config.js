@@ -4,10 +4,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
-function srcPaths(src) {
-  return path.join(__dirname, src);
-}
-
 const isEnvProduction = process.env.NODE_ENV === 'production';
 const isEnvDevelopment = process.env.NODE_ENV === 'development';
 
@@ -15,17 +11,9 @@ const isEnvDevelopment = process.env.NODE_ENV === 'development';
 const commonConfig = {
   devtool: isEnvDevelopment ? 'source-map' : false,
   mode: isEnvProduction ? 'production' : 'development',
-  output: { path: srcPaths('dist') },
+  output: { path: path.join(__dirname, 'dist') },
   node: { __dirname: false, __filename: false },
   resolve: {
-    alias: {
-      '@': srcPaths('src'),
-      '@main': srcPaths('src/main'),
-      '@models': srcPaths('src/models'),
-      '@public': srcPaths('public'),
-      '@renderer': srcPaths('src/renderer'),
-      '@utils': srcPaths('src/utils'),
-    },
     extensions: ['.js', '.json', '.ts', '.tsx'],
   },
   module: {
