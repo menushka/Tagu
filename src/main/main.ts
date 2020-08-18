@@ -1,6 +1,3 @@
-import * as dotenv from 'dotenv';
-dotenv.config();
-
 import * as path from 'path';
 import * as url from 'url';
 import { app, BrowserWindow, Menu } from 'electron';
