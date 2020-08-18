@@ -23,8 +23,9 @@ class LeftColumn extends React.Component<LeftColumnProps, {}> {
       'Select directory to export current file selection into.  Tags will be converted to folders.',
       'Export',
     ).then((data) => {
-      if (data?.length ?? 0 > 0) {
-        FileTreeHelper.exportTreeToPath(this.props.currentFileTree, this.props.dataPath, data![0]);
+      const exportPath = data?.filePaths;
+      if (exportPath.length ?? 0 > 0) {
+        FileTreeHelper.exportTreeToPath(this.props.currentFileTree, this.props.dataPath, exportPath![0]);
       }
     });
   };

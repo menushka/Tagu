@@ -31,8 +31,9 @@ class PreferencesDialog extends React.Component<PreferencesDialogProps, Preferen
       'Select new or existing database.  Choosing an empty directory will create a database in that directory.',
       'Create / Open',
     ).then((data) => {
-      if (data?.length ?? 0 > 0) {
-        this.setState({ dataPath: data![0] });
+      const exportPath = data?.filePaths;
+      if (exportPath.length ?? 0 > 0) {
+        this.setState({ dataPath: exportPath![0] });
       }
     });
   };

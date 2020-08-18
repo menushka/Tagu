@@ -1,23 +1,23 @@
 <h1 align="center">
   <br>
-  <a href="http://www.amitmerchant.com/electron-markdownify"><img src="./res/icon/tagu.png" alt="Tagu" width="150"></a>
+  <img src="./res/icon/tagu.png" alt="Tagu" width="150">
   <p style="margin: 10px; padding: 0px;">Tagu</p>
 </h1>
 
-<h4 align="center">A minimal Markdown Editor desktop app built on top of <a href="http://electron.atom.io" target="_blank">Electron</a>.</h4>
+<h4 align="center">A minimal local file tagger built with Electron, React, Redux, Webpack and Typescript</h4>
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How To Use</a> •
   <a href="#download">Download</a> •
-  <a href="#credits">Credits</a> •
-  <a href="#related">Related</a> •
+  <a href="#built-with">Built With</a> •
   <a href="#license">License</a>
 </p>
 
 <div align="center">
   <img src="./res/readme/preview.gif">
 </div>
+
+---
 
 ## Key Features
 
@@ -32,9 +32,9 @@
 
 ## Download
 
-You can [download](https://github.com/menushka/tagu/releases/) the latest installable version of Tagu.
+You can download the latest installable version of Tagu from the [Releases page](https://github.com/menushka/tagu/releases/), currently only MacOS is supported.
 
-## Built On
+## Built With
 
 This software uses the following open source packages:
 
@@ -47,5 +47,5 @@ This software uses the following open source packages:
 
 ## License
 
-This project is licensed under the GNU GPLv3 License - see the LICENSE.md file for details
+This project is licensed under the GNU GPLv3 License - see the [LICENSE.md](LICENSE.md) file for details
 
