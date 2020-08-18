@@ -4,6 +4,7 @@ dotenv.config();
 import * as path from 'path';
 import * as url from 'url';
 import { app, BrowserWindow, Menu } from 'electron';
+import installExtension, { REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 // import { enableLiveReload } from 'electron-compile';
 
 import { template } from '../main/menu';
@@ -13,7 +14,7 @@ import { setupElectronFileDialogListeners } from '../renderer/electron/fileDialo
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: Electron.BrowserWindow | null = null;
 
-// const isDevMode = process.execPath.match(/[\\/]electron/);
+const isDevMode = process.execPath.match(/[\\/]electron/);
 // if (isDevMode) {
 //   enableLiveReload({strategy: 'react-hmr'});
 // }
@@ -52,12 +53,8 @@ const createWindow = async () => {
 
   setupElectronFileDialogListeners(mainWindow);
 
-  if (process.env.REACT_DEVTOOLS_PATH) {
-    BrowserWindow.addDevToolsExtension(process.env.REACT_DEVTOOLS_PATH);
-  }
-
-  if (process.env.REDUX_DEVTOOLS_PATH) {
-    BrowserWindow.addDevToolsExtension(process.env.REDUX_DEVTOOLS_PATH);
+  if (isDevMode) {
+    await installExtension([REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS]);
   }
 };
 
@@ -82,10 +79,6 @@ app.on('activate', () => {
     createWindow();
   }
 });
-
-// Temporary fixes for upgrade to Electron 9
-// https://github.com/electron/electron/issues/18397
-app.allowRendererProcessReuse = false;
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
